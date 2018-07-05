@@ -13,7 +13,6 @@ let isIndex = false
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
   util.title(to.meta.title)
-  console.log(to)
   let login = cookies.get('user_accounts')
   if (!isIndex && login === undefined) {
     if (to.path !== '/home' && login) {

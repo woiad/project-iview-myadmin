@@ -48,7 +48,6 @@ export default {
   methods: {
     handelChange (name) {
       let width = window.screen.width
-      console.log(width)
       this.$router.push({name: name})
     },
     init () {

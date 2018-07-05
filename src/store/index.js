@@ -6,6 +6,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     active: '',
+    flag: false,
     currentPath: [
       {
         title: '首页',

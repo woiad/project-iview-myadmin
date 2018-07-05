@@ -73,6 +73,14 @@ export const appRouter = [
     children: [
       {path: 'index', name: '虚拟管理', component: () => import('@/components/virtual-admin/virtualAdmin'), meta: {title: '虚拟管理'}}
     ]
+  },
+  {
+    path: '/tempalteAdmin',
+    name: 'templateAdmin',
+    component: index,
+    children: [
+      {path: 'index', name: '模板管理', component: () => import('@/components/template-admin/templateAdmin2'), meta: {title: '模板管理'}}
+    ]
   }
 ]
 
