@@ -335,7 +335,7 @@ export default {
   .tem-con label{
     display: inline-block;
     margin: 10px 0;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 20px;
   }
   .tem-access-tem{
@@ -351,7 +351,7 @@ export default {
   }
   .tem-access-tem .access-text{
     display: inline-block;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 40px;
     color: #2d8cf0
   }

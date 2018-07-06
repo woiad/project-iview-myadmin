@@ -23,3 +23,22 @@ util.toDefaultPage = function (routers, to, router, next) {
     next()
   }
 }
+util.evil = function (fn) {
+  let Fn = Function
+  return new Fn('return' + fn)()
+}
+util.chartToBol = function (item) {
+  for (let j in item) {
+    for (let k in item[j]) {
+      if (item[j][k] === 'true' || item[j][k] === true) {
+        item[j][k] = true
+      } else {
+        item[j][k] = false
+      }
+    }
+  }
+  return item
+}
+util.subnitMessProcess = function (data) {
+  console.log(data)
+}
