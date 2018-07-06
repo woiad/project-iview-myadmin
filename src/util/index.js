@@ -23,11 +23,11 @@ util.toDefaultPage = function (routers, to, router, next) {
     next()
   }
 }
-util.evil = function (fn) {
+util.evil = function (fn) { // 解决 eval 报错
   let Fn = Function
   return new Fn('return' + fn)()
 }
-util.chartToBol = function (item) {
+util.chartToBol = function (item) { // 把字符 'true' 或 'false' 转换成布尔值
   for (let j in item) {
     for (let k in item[j]) {
       if (item[j][k] === 'true' || item[j][k] === true) {
@@ -39,6 +39,24 @@ util.chartToBol = function (item) {
   }
   return item
 }
-util.subnitMessProcess = function (data) {
-  console.log(data)
+util.changeCurrentValue = function (changeData, ref) { // 把当前选中的权限替换掉之前的权限
+  Object.keys(changeData).forEach((item, index) => {
+    for (let i in changeData[item]) {
+      let ind = i + index
+      changeData[item][i] = ref[ind][0].currentValue
+    }
+  })
+  return changeData
+}
+util.changeValue = function (unchangeData, changeData) { // 检测单签权限的值是否更改
+  let changeFlag = false
+  for (let i in unchangeData) {
+    for (let j in unchangeData[i]) {
+      if (unchangeData[i][j] !== changeData[i][j]) {
+        changeFlag = true
+        return changeFlag
+      }
+    }
+  }
+  return changeFlag
 }

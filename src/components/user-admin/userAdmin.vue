@@ -7,23 +7,23 @@
       <i-table :columns="columnsData" :data="userData"></i-table>
     </div>
     <div class="modal">
-      <Modal v-model="userAddFlag" title="用户新增" @on-ok="userAddOk" @on-cancel="userAddCancel">
+      <Modal v-model="userAddFlag" title="用户新增" @on-cancel="this.clearUserAddData">
         <div class="user-con">
           <i-form ref="formUser">
             <FormItem label="用户账号：">
-              <i-input placeholder = "请输入账号，账号格式是邮箱" v-model="userAccounts" autocomplete="off"></i-input>
+              <i-input placeholder = "请输入账号，账号格式是邮箱" v-model="userAddInpData.userAccounts" autocomplete="off"></i-input>
             </FormItem>
             <FormItem label="用户部门：">
-              <i-input placeholder = "请输入用户部门" v-model="userDepartment"></i-input>
+              <i-input placeholder = "请输入用户部门" v-model="userAddInpData.userDepartment"></i-input>
             </FormItem>
             <FormItem label="用户名字：">
-              <i-input placeholder = "请输入用户名" v-model="userName"></i-input>
+              <i-input placeholder = "请输入用户名" v-model="userAddInpData.userName"></i-input>
             </FormItem>
             <FormItem label="用户密码：">
-              <i-input placeholder = "请输入用户密码" v-model="userPassword" type="password"></i-input>
+              <i-input placeholder = "请输入用户密码" v-model="userAddInpData.userPassword" type="password"></i-input>
             </FormItem>
             <FormItem label="用户备注：">
-              <i-input placeholder = "请输入用户备注" v-model="userRemarks"></i-input>
+              <i-input placeholder = "请输入用户备注" v-model="userAddInpData.userRemarks"></i-input>
             </FormItem>
           </i-form>
           <div class="level-type">
@@ -49,9 +49,10 @@
               </Panel>
             </Collapse>
           </div>
-          <div class="btn">
-            <Button type="success" long @click="submitUserAdd">提交</Button>
-          </div>
+        </div>
+        <div slot="footer">
+          <Button @click="this.clearUserAddData">重置</Button>
+          <Button type="primary" @click="submitUserAdd">提交</Button>
         </div>
       </Modal>
       <Modal v-model="levelTypeShow" title="权限模板" style="{zIndex: '100'}" @on-ok="choseTemName">
@@ -65,13 +66,13 @@
         <div class="user-con">
           <i-form ref="formUserModifier">
             <FormItem label="用户部门：">
-              <i-input :placeholder = "userModifierData.user_department" v-model="userModifierDepartment"></i-input>
+              <i-input :placeholder = "userModifierData.user_department" v-model="userModifierInpData.userModifierDepartment"></i-input>
             </FormItem>
             <FormItem label="用户名字：">
-              <i-input :placeholder = "userModifierData.user_name" v-model="userModifierName"></i-input>
+              <i-input :placeholder = "userModifierData.user_name" v-model="userModifierInpData.userModifierName"></i-input>
             </FormItem>
             <FormItem label="用户备注：">
-              <i-input :placeholder = "userModifierData.user_remarks" v-model="userModifierRemarks"></i-input>
+              <i-input :placeholder = "userModifierData.user_remarks" v-model="userModifierInpData.userModifierRemarks"></i-input>
             </FormItem>
           </i-form>
           <div class="user-access-tem">
@@ -94,6 +95,35 @@
           </div>
         </div>
       </Modal>
+      <Modal v-model="modifierPasswordShow" title="修改密码">
+        <Form ref="editPasswordForm" :model="editPasswordForm" :label-width="100" label-position="right" :rules="passwordValidate">
+          <!--<FormItem label="原密码" prop="oldPass" :error="oldPassError">-->
+            <!--<Input v-model="editPasswordForm.oldPass" placeholder="请输入现在使用的密码" ></Input>-->
+          <!--</FormItem>-->
+          <FormItem label="新密码" prop="newPass">
+            <Input v-model="editPasswordForm.newPass" placeholder="请输入新密码，至少6位字符" type="password"></Input>
+          </FormItem>
+          <FormItem label="确认新密码" prop="rePass">
+            <Input v-model="editPasswordForm.rePass" placeholder="请再次输入新密码" type="password"></Input>
+          </FormItem>
+        </Form>
+        <div slot="footer">
+          <Button type="text" @click="cancelEditPass">取消</Button>
+          <Button type="primary" :loading="savePassLoading" @click="saveEditPass">保存</Button>
+        </div>
+      </Modal>
+      <Modal v-model="userDelShow" width="360">
+        <p slot="header" style="color: rgb(255, 102, 0);text-align: center">
+          <Icon type="information-circled"></Icon>
+          <span>删除确认</span>
+        </p>
+        <div style="text-align: center">
+          <p>该用户一经删除，无法恢复</p>
+        </div>
+        <div slot="footer">
+          <Button type="error" size="large" long @click="confirmDel">删除</Button>
+        </div>
+      </Modal>
     </div>
   </div>
 </template>
@@ -104,6 +134,13 @@ import md5 from 'js-md5'
 export default {
   name: 'userAdmin',
   data () {
+    const valideRePassword = (rule, value, callback) => {
+      if (value !== this.editPasswordForm.newPass) {
+        callback(new Error('两次密码输入不一致'))
+      } else {
+        callback()
+      }
+    }
     return {
       columnsData: [
         {
@@ -153,7 +190,7 @@ export default {
                 },
                 on: {
                   click: () => {
-                    alert(2)
+                    this.modifierPassword(params)
                   }
                 }
               }, '修改密码'),
@@ -164,35 +201,64 @@ export default {
                 },
                 on: {
                   click: () => {
-                    alert(3)
+                    this.userDel(params)
                   }
                 }
               }, '删除用户')
             ])
           }
         }
-      ],
-      userData: [],
-      userOriginData: {},
-      userAddFlag: false,
-      userAddData: {},
-      userName: '',
-      userDepartment: '',
-      userPassword: '',
-      userRemarks: '',
-      userAccounts: '',
-      levelTypeShow: false,
-      choseList: [],
-      choseDefault: '默认模板',
-      temName: '',
-      temData: '',
-      accessListShow: false,
-      accessListData: {},
-      userModifierFlag: false,
-      userModifierDepartment: '',
-      userModifierName: '',
-      userModifierRemarks: '',
-      userModifierData: ''
+      ], // table 数据
+      userData: [], // 所有用户信息，在table里展示
+      userOriginData: {}, // 初始数据，即所有的用户信息
+      userAddFlag: false, // 用户添加modal隐藏与显示
+      userAddData: {}, // 用户添加的数据
+      userAddInpData: {
+        userName: '',
+        userDepartment: '',
+        userPassword: '',
+        userRemarks: '',
+        userAccounts: ''
+      }, // 填写的数据
+      levelTypeShow: false, // 选择权限模板的 modal 隐藏与显示
+      choseList: [], // 可选择的模板数据
+      choseDefault: '默认模板', // 选中默认模板
+      temName: '', // 所有的模板名字
+      temData: '', // 所有的模板数据
+      accessListShow: false, // 刚开始没有选中模板，权限列表隐藏
+      accessListData: {}, // 选中的模板的数据
+      userModifierFlag: false, // 修改权限的modal隐藏与显示
+      userModifierInpData: {
+        userModifierDepartment: '',
+        userModifierName: '',
+        userModifierRemarks: ''
+      }, // 修改modal中填写的数据
+      userModifierData: '', // 当前修改的原始数据
+      modifierPasswordShow: false, // 修改密码的modal的隐藏于显示
+      savePassLoading: false, // 提交修改密码后，提交按钮变为加载状态
+      oldPassError: '', // 暂时无数据
+      passId: '', // 点击修改密码是，获取index,根据index,确定那个用户的密码修改
+      editPasswordForm: {
+        oldPass: '',
+        newPass: '',
+        rePass: ''
+      }, // 修改密码的数据
+      passwordValidate: {
+        oldPass: [
+          {required: true, message: '请输入原密码', trigger: 'blur'}
+        ],
+        newPass: [
+          {required: true, message: '请输入新密码', trigger: 'blur'},
+          {min: 6, message: '请至少输入6个字符', trigger: 'blur'},
+          {max: 32, message: '最多输入32个字符', trigger: 'blur'}
+        ],
+        rePass: [
+          {required: true, message: '请再次输入新密码', trigger: 'blur'},
+          {validator: valideRePassword, trigger: 'blur'}
+        ]
+      }, // 设置表单校验
+      userDelShow: false, // 删除用户的modal的隐藏与显示
+      delId: '' // 删除的索引
     }
   },
   methods: {
@@ -208,7 +274,6 @@ export default {
           for (let i = 0; i < res.length; i++) {
             this.choseList.push(res[i].tem_name)
           }
-          console.log(this.temData)
         })
         .catch(err => {
           console.log(err)
@@ -229,40 +294,48 @@ export default {
       this.accessListData.tem_level = util.evil(this.accessListData.tem_level)
       util.chartToBol(this.accessListData.tem_level)
       this.accessListShow = true
-      console.log(this.accessListData)
     },
-    userAddOk () {
-      this.clearUserAddData()
-    },
-    userAddCancel () {
-      this.clearUserAddData()
+    clearUserAddData () {
+      this.accessListData = {}
+      this.temName = ''
+      this.userAddInpData.userName = ''
+      this.userAddInpData.userAccounts = ''
+      this.userAddInpData.userDepartment = ''
+      this.userAddInpData.userPassword = ''
+      this.userAddInpData.userRemarks = ''
+      if (this.$refs.radio !== undefined && this.$refs.radio !== null) {
+        for (let i = 0; i < this.$refs.radio.length; i++) {
+          this.$refs.radio[i].currentValue = false
+        }
+        this.$refs.radio[0].currentValue = true
+      }
+      this.accessListShow = false
     },
     submitUserAdd () {
       const reg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/
-      if (this.userName === '' || this.userAccounts === '' || this.userDepartment === '' || this.userRemarks === '' || this.userPassword === '') {
+      if (this.userAddInpData.userName === '' || this.userAddInpData.userAccounts === '' || this.userAddInpData.userDepartment === '' || this.userAddInpData.userRemarks === '' || this.userAddInpData.userPassword === '') {
         window.alert('请填写完整的用户信息！')
       } else if (this.accessListShow === false) {
         window.alert('请选择权限模板')
-      } else if (!reg.test(this.userAccounts)) {
+      } else if (!reg.test(this.userAddInpData.userAccounts)) {
         alert('邮箱格式不正确！')
       } else {
-        console.log(this.accessListData)
-        let obj = this.submitMessOpt(this.accessListData, this.userName, this.userPassword, this.userAccounts, this.userDepartment, this.userRemarks)
+        let obj = this.submitMessOpt(this.accessListData, this.userAddInpData.userName, this.userAddInpData.userPassword, this.userAddInpData.userAccounts, this.userAddInpData.userDepartment, this.userAddInpData.userRemarks)
         let subChart = JSON.stringify(obj)
         this.$post('http://113.105.246.233:9100/webapi/user', {key: 'add', content: subChart})
           .then(res => {
-            this.$Message.info('用户新增成功！')
-            this.getUserData()
-            console.log(res)
+            if (res[1] === 200) {
+              this.$Message.info('用户新增成功！')
+              this.getUserData()
+              this.userAddFlag = false
+            }
           })
           .catch(err => {
             this.$Message.info('用户新增失败' + err)
-            console.log(err)
           })
       }
     },
     submitMessOpt (submitData, name, password, accounts, department, remarks) {
-      debugger
       let submitObj = {}
       submitObj.user_accounts = accounts
       submitObj.user_department = department
@@ -270,12 +343,7 @@ export default {
       submitObj.user_remarks = remarks
       submitObj.user_passwd = md5(password)
       submitObj.user_level = {}
-      Object.keys(submitData.tem_level).forEach((item, index) => {
-        for (let i in submitData.tem_level[item]) {
-          let ind = i + index
-          submitData.tem_level[item][i] = this.$refs[ind][0].currentValue
-        }
-      })
+      util.changeCurrentValue(submitData.tem_level, this.$refs)
       submitObj.user_level = submitData.tem_level
       return submitObj
     },
@@ -289,61 +357,122 @@ export default {
       util.chartToBol(this.userModifierData.user_level)
     },
     userModifier () {
-      if (this.userModifierName !== '') {
-        this.userModifierData.user_name = this.userModifierName
-      }
-      if (this.userModifierDepartment !== '') {
-        this.userModifierData.user_department = this.userModifierDepartment
-      }
-      if (this.userModifierRemarks !== '') {
-        this.userModifierData.user_remarks = this.userModifierRemarks
-      }
-      Object.keys(this.userModifierData.user_level).forEach((item, index) => {
-        for (let i in this.userModifierData.user_level[item]) {
-          let ind = i + index
-          this.userModifierData.user_level[item][i] = this.$refs[ind][0].currentValue
-        }
-      })
-      let chartSub = JSON.stringify(this.userModifierData)
+      let modifierChart = JSON.stringify(this.userModifierData)
+      let modifierDataObj = this.userModifierDataOpt(JSON.parse(modifierChart))
+      delete modifierDataObj.user_times
+      let chartSub = JSON.stringify(modifierDataObj)
+      let flag = this.userModifierChange(this.userModifierData, modifierDataObj)
       let id = this.userModifierData.id
-      this.$post('http://113.105.246.233:9100/webapi/user', {key: 'update', type: 'level', content: chartSub, id: id})
-        .then(res => {
-          this.$Message.info('修改成功')
-          console.log(res)
-        })
-        .catch(err => {
-          this.$Message.info('修改失败' + err)
-          console.log(err)
-        })
-      console.log(this.userModifierData)
-      this.clearUserAddData()
+      if (flag) {
+        this.$post('http://113.105.246.233:9100/webapi/user', {key: 'update', type: 'level', content: chartSub, id: id})
+          .then(res => {
+            if (res[1] === 200) {
+              this.$Message.info('修改成功')
+              this.getUserData()
+            }
+          })
+          .catch(err => {
+            this.$Message.info('修改失败' + err)
+          })
+      } else {
+        window.alert('提交失败，数据没有更改')
+      }
+      this.clearUserModifierData()
+    },
+    userModifierDataOpt (optionData) {
+      if (this.userModifierInpData.userModifierName !== '') {
+        optionData.user_name = this.userModifierInpData.userModifierName
+      }
+      if (this.userModifierInpData.userModifierDepartment !== '') {
+        optionData.user_department = this.userModifierInpData.userModifierDepartment
+      }
+      if (this.userModifierInpData.userModifierRemarks !== '') {
+        optionData.user_remarks = this.userModifierInpData.userModifierRemarks
+      }
+      util.changeCurrentValue(optionData.user_level, this.$refs)
+      return optionData
     },
     userModifierCancel () {
-      alert(2)
+      this.clearUserModifierData()
     },
-    clearUserAddData () {
-      this.accessListData = {}
-      this.temName = ''
-      this.userName = ''
-      this.userAccounts = ''
-      this.userDepartment = ''
-      this.userPassword = ''
-      this.userRemarks = ''
-      if (this.$refs.radio !== undefined && this.$refs.radio !== null) {
-        for (let i = 0; i < this.$refs.radio.length; i++) {
-          this.$refs.radio[i].currentValue = false
-        }
-        this.$refs.radio[0].currentValue = true
+    clearUserModifierData () {
+      this.userModifierInpData.userModifierRemarks = ''
+      this.userModifierInpData.userModifierName = ''
+      this.userModifierInpData.userModifierDepartment = ''
+      this.userModifierData = {}
+    },
+    userModifierChange (unChangeData, changeData) {
+      let changeFlag = false
+      let unChangeName = unChangeData.user_name
+      let unChangeDepartment = unChangeData.user_department
+      let unChangeRemarks = unChangeData.user_remarks
+      let changeName = changeData.user_name
+      let changeDepartment = changeData.user_department
+      let changeRemarks = changeData.user_remarks
+      if (unChangeName !== changeName || unChangeDepartment !== changeDepartment || unChangeRemarks !== changeRemarks) {
+        changeFlag = true
+        return changeFlag
       }
-      this.accessListShow = false
+      changeFlag = util.changeValue(unChangeData.user_level, changeData.user_level)
+      return changeFlag
+    },
+    modifierPassword (params) {
+      this.modifierPasswordShow = true
+      this.passId = params.index
+    },
+    cancelEditPass () {
+      this.modifierPasswordShow = false
+      this.editPasswordForm.newPass = ''
+      this.editPasswordForm.rePass = ''
+    },
+    saveEditPass () {
+      let modifierId = this.userData[this.passId].id
+      this.$refs['editPasswordForm'].validate((valid) => {
+        if (valid) {
+          this.savePassLoading = true
+          this.$post('http://113.105.246.233:9100/webapi/user', {key: 'update', type: 'passwd', content: md5(this.editPasswordForm.rePass), id: modifierId})
+            .then(res => {
+              console.log(res)
+              if (res[1] === 200) {
+                this.$Message.info('密码修改成功')
+                this.savePassLoading = false
+                this.modifierPasswordShow = false
+                this.editPasswordForm.newPass = ''
+                this.editPasswordForm.rePass = ''
+              }
+            })
+            .catch(err => {
+              this.$Message.info('修改密码失败' + err)
+              console.log(err)
+            })
+        }
+      })
+    },
+    userDel (params) {
+      this.userDelShow = true
+      this.delId = params.index
+    },
+    confirmDel () {
+      let id = this.userData[this.delId].id
+      this.$post('http://113.105.246.233:9100/webapi/user', {key: 'del', id: id})
+        .then(res => {
+          if (res[1] === 200) {
+            this.$Message.info('删除成功')
+            this.getUserData()
+            this.userDelShow = false
+          }
+        })
+        .catch(err => {
+          this.$Message.info('删除失败' + err)
+        })
     },
     getUserData () {
       this.$post('http://113.105.246.233:9100/webapi/user', {key: 'show'})
         .then(res => {
-          console.log(res)
           this.userData = []
           for (let i = 0; i < res.length; i++) {
             let obj = {
+              id: '',
               user_name: '',
               user_department: '',
               user_times: '',
@@ -355,6 +484,7 @@ export default {
             obj.user_times = res[i].user_times
             obj.user_remarks = res[i].user_remarks
             obj.user_level = res[i].user_level
+            obj.id = res[i].id
             this.userData.push(obj)
           }
           this.userOriginData = res
@@ -378,7 +508,7 @@ export default {
   .user-container .user-add{
     margin-bottom: 10px;
   }
-  .ivu-form-item{
+  .user-con .ivu-form-item{
     margin-bottom: 10px;
   }
   .user-access-tem .access-list{

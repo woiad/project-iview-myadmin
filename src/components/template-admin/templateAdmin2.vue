@@ -36,6 +36,10 @@
             </Collapse>
           </div>
         </div>
+        <div slot="footer">
+          <Button @click="buildCancel">重置</Button>
+          <Button type="primary" @click="submitBuildTemData">提交</Button>
+        </div>
       </Modal>
       <Modal v-model="modifierTemplateShow" title="修改模板" @on-cancel="modifierCancel" @on-ok="modifierSubmit">
           <div class="tem-con">
@@ -67,14 +71,24 @@
             </div>
           </div>
       </Modal>
-      <Modal v-model="delConfirm" title="删除提示" @on-ok="confirmDel">
-        <p>确认删除，一旦删除，不可恢复！</p>
+      <Modal v-model="delConfirm" width="360">
+        <p slot="header" style="color: rgb(255, 102, 0);text-align: center">
+          <Icon type="information-circled"></Icon>
+          <span>删除确认</span>
+        </p>
+        <div style="text-align: center">
+          <p>该用户一经删除，无法恢复</p>
+        </div>
+        <div slot="footer">
+          <Button type="error" size="large" long @click="confirmDel">删除</Button>
+        </div>
       </Modal>
     </div>
   </div>
 </template>
 
 <script>
+import util from '../.././util/index'
 export default {
   name: 'templateAdmin2',
   data () {
@@ -148,9 +162,9 @@ export default {
       let ind = item.index
       let modifierData = this.originData[ind]
       if (typeof modifierData.tem_level === 'string') {
-        modifierData.tem_level = this.evil(modifierData.tem_level)
+        modifierData.tem_level = util.evil(modifierData.tem_level)
       }
-      this.chartToBol(modifierData)
+      util.chartToBol(modifierData.tem_level)
       this.modifierData = modifierData
     },
     // 提交修改后的权限模板信息
@@ -184,12 +198,16 @@ export default {
     bulidTemplate () {
       this.initModal()
       this.flag = true
+      this.modalData = {}
       this.optionTem = '新建模板'
+      this.getBuildTem()
+    },
+    getBuildTem () {
       this.$post('http://113.105.246.233:9100/webapi/template', {key: 'get_default_tem', content: 'default'})
         .then(res => {
           let buildDefaultData = res
-          buildDefaultData[0].tem_level = this.evil(buildDefaultData[0].tem_level)
-          this.chartToBol(buildDefaultData[0])
+          buildDefaultData[0].tem_level = util.evil(buildDefaultData[0].tem_level)
+          util.chartToBol(buildDefaultData[0].tem_level)
           this.modalData = buildDefaultData[0]
         })
         .catch(err => {
@@ -222,7 +240,7 @@ export default {
     // 模板信息处理
     submitTemData (submitData, name, remarks) {
       let jsonReplace = JSON.stringify(submitData).replace(/tem_level/g, 'level')
-      let submitObj = this.evil(jsonReplace)
+      let submitObj = util.evil(jsonReplace)
       if (name === '') {
         name = submitData.tem_name
       }
@@ -231,30 +249,14 @@ export default {
       }
       submitObj.tem_name = name
       submitObj.tem_remarks = remarks
-      Object.keys(submitObj.level).forEach((item, index) => {
-        for (let i in submitObj.level[item]) {
-          let ind = i + index
-          submitObj.level[item][i] = this.$refs[ind][0].currentValue
-        }
-      })
+      util.changeCurrentValue(submitObj.level, this.$refs)
       return submitObj
     },
     // 新建模板关闭
     buildCancel () {
+      this.initModal()
       this.modalData = {}
-    },
-    // 数据中的true，false 是字符，该函数把字符转换成布尔值
-    chartToBol (item) {
-      for (let j in item.tem_level) {
-        for (let k in item.tem_level[j]) {
-          if (item.tem_level[j][k] === 'true' || item.tem_level[j][k] === true) {
-            item.tem_level[j][k] = true
-          } else {
-            item.tem_level[j][k] = false
-          }
-        }
-      }
-      return item.temlevel
+      this.getBuildTem()
     },
     // 删除模板
     delTem (param) {
@@ -267,16 +269,13 @@ export default {
         .then(res => {
           this.$Message.info('删除成功')
           this.temData.splice(this.delInd, 1)
+          this.delConfirm = false
         })
         .catch(err => {
           console.log(err)
           this.$Message.info('删除失败：&nbsp;' + err)
+          this.delConfirm = false
         })
-    },
-    // 解决 eval 报错
-    evil (fn) {
-      let Fn = Function
-      return new Fn('return' + fn)()
     },
     // 初始化模板
     initModal () {
@@ -301,24 +300,17 @@ export default {
         })
     },
     // 模板中的信息是否更改
-    changeTemText (unchangeData, changeData) {
-      let unchangeTemName = unchangeData.tem_name
-      let unchangeTemRemarks = unchangeData.tem_remarks
+    changeTemText (unChangeData, changeData) {
+      let unChangeTemName = unChangeData.tem_name
+      let unChangeTemRemarks = unChangeData.tem_remarks
       let changeDataTemNane = changeData.tem_name
       let changeDataTemRemarks = changeData.tem_remarks
       let changeFlag = false
-      if (unchangeTemName !== changeDataTemNane || unchangeTemRemarks !== changeDataTemRemarks) {
+      if (unChangeTemName !== changeDataTemNane || unChangeTemRemarks !== changeDataTemRemarks) {
         changeFlag = true
         return changeFlag
       }
-      for (let i in unchangeData.tem_level) {
-        for (let j in unchangeData.tem_level[i]) {
-          if (unchangeData.tem_level[i][j] !== changeData.level[i][j]) {
-            changeFlag = true
-            return changeFlag
-          }
-        }
-      }
+      util.changeValue(unChangeData.tem_level, changeData.level)
     }
   }
 }

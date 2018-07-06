@@ -104,9 +104,7 @@ export default {
   mounted () {
     axios.get('http://113.105.246.233:9005/server/index.php?g=Web&c=Mock&o=simple&projectID=2&uri=/api/webapi/login_level').then((response) => {
       this.message = response.data.user_level
-      console.log(this.message)
       this.$set(this.message, '模板管理', {status: 'true', 模板查看: 'true', 模板新建: 'true', 模板删除: 'true', 模板修改: 'true'})
-      console.log(this.message)
     })
     this.init()
     this.$store.commit('setOpenList')
@@ -123,7 +121,6 @@ export default {
     },
     paddingLeft () {
       let width = window.screen.width
-      console.log(width)
       if (width < 768) {
         return 0
       } else {
