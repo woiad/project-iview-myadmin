@@ -262,10 +262,10 @@ export default {
     }
   },
   methods: {
-    addUser () {
+    addUser () { // 添加用户modal 弹出
       this.userAddFlag = true
     },
-    levelTypeChose () {
+    levelTypeChose () { // 获取权限模板
       this.levelTypeShow = true
       this.$post('http://113.105.246.233:9100/webapi/template', {key: 'get_default_tem', content: 'all'})
         .then(res => {
@@ -279,7 +279,7 @@ export default {
           console.log(err)
         })
     },
-    choseTemName () {
+    choseTemName () { // 选中的权限模板
       let len = this.$refs.radio.length
       for (let i = 0; i < len; i++) {
         if (this.$refs.radio[i].currentValue === true) {
@@ -295,7 +295,7 @@ export default {
       util.chartToBol(this.accessListData.tem_level)
       this.accessListShow = true
     },
-    clearUserAddData () {
+    clearUserAddData () { // 重置用户新增 modal
       this.accessListData = {}
       this.temName = ''
       this.userAddInpData.userName = ''
@@ -303,7 +303,7 @@ export default {
       this.userAddInpData.userDepartment = ''
       this.userAddInpData.userPassword = ''
       this.userAddInpData.userRemarks = ''
-      if (this.$refs.radio !== undefined && this.$refs.radio !== null) {
+      if (this.$refs.radio !== undefined && this.$refs.radio !== null) { // 初始化权限选择模板
         for (let i = 0; i < this.$refs.radio.length; i++) {
           this.$refs.radio[i].currentValue = false
         }
@@ -311,7 +311,7 @@ export default {
       }
       this.accessListShow = false
     },
-    submitUserAdd () {
+    submitUserAdd () { // 提交用户新增数据
       const reg = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/
       if (this.userAddInpData.userName === '' || this.userAddInpData.userAccounts === '' || this.userAddInpData.userDepartment === '' || this.userAddInpData.userRemarks === '' || this.userAddInpData.userPassword === '') {
         window.alert('请填写完整的用户信息！')
@@ -347,7 +347,7 @@ export default {
       submitObj.user_level = submitData.tem_level
       return submitObj
     },
-    modifierLevel (params) {
+    modifierLevel (params) { // 修改权限模板 modal 弹出
       let ind = params.index
       this.userModifierFlag = true
       this.userModifierData = this.userData[ind]
@@ -356,8 +356,9 @@ export default {
       }
       util.chartToBol(this.userModifierData.user_level)
     },
-    userModifier () {
-      let modifierChart = JSON.stringify(this.userModifierData)
+    userModifier () { // 提交修改后的数据
+      let modifierChart = JSON.stringify(this.userModifierData) // 此处要把用户修改的初始数据转换后赋值给新变量，
+      // 不赋值，那么修改了数据，this.userModifierData 的数据也同步发生变化，则无法判断数据是否发生变化
       let modifierDataObj = this.userModifierDataOpt(JSON.parse(modifierChart))
       delete modifierDataObj.user_times
       let chartSub = JSON.stringify(modifierDataObj)
@@ -379,7 +380,7 @@ export default {
       }
       this.clearUserModifierData()
     },
-    userModifierDataOpt (optionData) {
+    userModifierDataOpt (optionData) { // 修改后的数据的收集
       if (this.userModifierInpData.userModifierName !== '') {
         optionData.user_name = this.userModifierInpData.userModifierName
       }
@@ -392,16 +393,16 @@ export default {
       util.changeCurrentValue(optionData.user_level, this.$refs)
       return optionData
     },
-    userModifierCancel () {
+    userModifierCancel () { // 重置修改权限 modal 数据
       this.clearUserModifierData()
     },
-    clearUserModifierData () {
+    clearUserModifierData () { // 重置修改权限 modal 数据
       this.userModifierInpData.userModifierRemarks = ''
       this.userModifierInpData.userModifierName = ''
       this.userModifierInpData.userModifierDepartment = ''
       this.userModifierData = {}
     },
-    userModifierChange (unChangeData, changeData) {
+    userModifierChange (unChangeData, changeData) { // 判断修改权限 modal 里面的数据是否更改
       let changeFlag = false
       let unChangeName = unChangeData.user_name
       let unChangeDepartment = unChangeData.user_department
@@ -416,16 +417,16 @@ export default {
       changeFlag = util.changeValue(unChangeData.user_level, changeData.user_level)
       return changeFlag
     },
-    modifierPassword (params) {
+    modifierPassword (params) { // 提供修改密码的索引
       this.modifierPasswordShow = true
       this.passId = params.index
     },
-    cancelEditPass () {
+    cancelEditPass () { // 取消修改密码
       this.modifierPasswordShow = false
       this.editPasswordForm.newPass = ''
       this.editPasswordForm.rePass = ''
     },
-    saveEditPass () {
+    saveEditPass () { // 保存修改后的密码
       let modifierId = this.userData[this.passId].id
       this.$refs['editPasswordForm'].validate((valid) => {
         if (valid) {
@@ -448,11 +449,11 @@ export default {
         }
       })
     },
-    userDel (params) {
+    userDel (params) { // 获取删除的索引
       this.userDelShow = true
       this.delId = params.index
     },
-    confirmDel () {
+    confirmDel () { // 确认删除
       let id = this.userData[this.delId].id
       this.$post('http://113.105.246.233:9100/webapi/user', {key: 'del', id: id})
         .then(res => {
@@ -466,26 +467,26 @@ export default {
           this.$Message.info('删除失败' + err)
         })
     },
-    getUserData () {
+    getUserData () { // 用户管理界面初始数据
       this.$post('http://113.105.246.233:9100/webapi/user', {key: 'show'})
         .then(res => {
           this.userData = []
           for (let i = 0; i < res.length; i++) {
-            let obj = {
-              id: '',
-              user_name: '',
-              user_department: '',
-              user_times: '',
-              user_remarks: '',
-              user_level: ''
-            }
-            obj.user_name = res[i].user_name
-            obj.user_department = res[i].user_department
-            obj.user_times = res[i].user_times
-            obj.user_remarks = res[i].user_remarks
-            obj.user_level = res[i].user_level
-            obj.id = res[i].id
-            this.userData.push(obj)
+            // let obj = {
+            //   id: '',
+            //   user_name: '',
+            //   user_department: '',
+            //   user_times: '',
+            //   user_remarks: '',
+            //   user_level: ''
+            // }
+            // obj.user_name = res[i].user_name
+            // obj.user_department = res[i].user_department
+            // obj.user_times = res[i].user_times
+            // obj.user_remarks = res[i].user_remarks
+            // obj.user_level = res[i].user_level
+            // obj.id = res[i].id
+            this.userData.push(res[i])
           }
           this.userOriginData = res
         })

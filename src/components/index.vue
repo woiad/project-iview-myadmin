@@ -135,6 +135,10 @@ export default {
 </script>
 
 <style scoped>
+  .container{
+    height: 100%;
+    overflow-y: scroll;
+  }
   .layout{
     border: 1px solid #d7dde4;
     background: #f5f7f9;
@@ -224,6 +228,9 @@ export default {
   .singe-page{
     position: fixed;
     top: 104px;
+    height: 100%;
+    overflow: scroll;
+    /*position: relative;*/
     right: 0;
     bottom: 0;
     background: #f0f0f0;
