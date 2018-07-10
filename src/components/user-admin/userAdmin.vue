@@ -7,7 +7,7 @@
       <i-table :columns="columnsData" :data="userData"></i-table>
     </div>
     <div class="modal">
-      <Modal v-model="userAddFlag" title="用户新增" @on-cancel="this.clearUserAddData">
+      <Modal v-model="userAddFlag" title="用户新增" @on-cancel="clearUserAddData">
         <div class="user-con">
           <i-form ref="formUser">
             <FormItem label="用户账号：">
@@ -51,7 +51,7 @@
           </div>
         </div>
         <div slot="footer">
-          <Button @click="this.clearUserAddData">重置</Button>
+          <Button @click="clearUserAddData">重置</Button>
           <Button type="primary" @click="submitUserAdd">提交</Button>
         </div>
       </Modal>
