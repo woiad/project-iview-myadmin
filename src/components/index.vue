@@ -137,7 +137,6 @@ export default {
 <style scoped>
   .container{
     height: 100%;
-    overflow-y: scroll;
   }
   .layout{
     border: 1px solid #d7dde4;
