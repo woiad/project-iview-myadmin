@@ -1,7 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 
-axios.defaults.timeout = 5000
+axios.defaults.timeout = 6000
 axios.defaults.baseUrl = 'http://113.105.246.233:9100'
 
 // http reruest 拦截器

@@ -1,49 +1,131 @@
 [
+
   {
-    id: 1,
-    user_accounts: "623771897@qq.com",
-    user_department: "网安部",
-    user_remarks: "备注",
-    user_times: "2018-05-28 16:45:21",
-    user_level: {[
-      用户管理: {
-        status: "false",
-        新建: "true",
-        修改: "true",
-        删除: "true"
+
+    "idc_name": "德胜机房",
+
+    "status": "true",
+
+    "data": {
+
+    }
+
+  },
+
+  {
+
+    "idc_name": "香港机房",
+
+    "status": "false",
+
+    "data": "香港机房无法访问接口"
+
+  },
+
+  {
+
+    "idc_name": "上海机房",
+
+    "status": "false",
+
+    "data": "上海机房无法访问接口"
+
+  },
+
+  {
+
+    "idc_name": "北京机房",
+
+    "status": "false",
+
+    "data": "北京机房无法访问接口"
+
+  },
+
+  {
+
+    "idc_name": "德胜机房",
+
+    "status": "true",
+
+    "data": [
+
+      {
+
+        "tow_key": "113.105.246.235",
+
+        "tow_value": {
+
+          "ip": "113.105.246.235",
+
+          "flow": 3216600,
+
+          "type": "allfirewall",
+
+          "user": "system",
+
+          "idc_id": "1",
+
+          "idc_name": "德胜机房",
+
+          "ran_flow": 0,
+
+          "set_flow": "1024",
+
+          "tow_time": 1531327750.776,
+
+          "tow_time_r": "2018-07-1200: 49: 10",
+
+          "tow_time_start": "2018-07-1200: 39: 10"
+
+        }
+
       },
-      全局管理: {
-        status: "true",
-        修改: "true",
-        删除机房: "true"
-      },
-      实时牵引管理: {
-        status: "true",
-        查看全部: "true",
-        查看部份: "true",
-        修改牵引时间: "true",
-        手动解封: "true"
-      },
-      手动封停管理: {
-        status: "true",
-        新建: "true",
-        解封IP: "true"
-      },
-      历史管理: {
-        status: "true",
-        牵引历史: "true",
-        手动封停历史: "true",
-        操作历史: "true",
-        登陆历史: "true",
-        错误日志: "true"
-      },
-      虚拟管理: {
-        status: "true",
-        新增: "true",
-        修改: "true",
-        删除: "true",
-        操作历史: "true"
+
+      {
+
+        "tow_key": "113.105.246.236",
+
+        "tow_value": {
+
+          "ip": "113.105.246.236",
+
+          "flow": 3216600,
+
+          "type": "allfirewall",
+
+          "user": "system",
+
+          "idc_id": "1",
+
+          "idc_name": "德胜机房",
+
+          "ran_flow": 0,
+
+          "set_flow": "1024",
+
+          "tow_time": 1531327750.776,
+
+          "tow_time_r": "2018-07-1200: 49: 10",
+
+          "tow_time_start": "2018-07-1200: 39: 10"
+
+        }
+
       }
-    ]}
-  }
+
+    ]
+
+  },
+
+  {
+
+    "idc_name": "香港机房",
+
+    "status": "false",
+
+    "data": "香港机房无法访问接口"
+
+  },
+
 ]

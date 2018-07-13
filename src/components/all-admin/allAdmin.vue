@@ -3,58 +3,61 @@
     <div class="admin-add">
       <Button type="primary" icon="ios-plus-empty" @click="addRoom">添加机房</Button>
     </div>
-    <div class="admin-list">
-      <ul>
-          <li v-for="(item, index) in adminData" :key="index" class="item-list">
-            <div class="dropdown">
-              <div class="dropdown-header">
-                <a href="javascript:void(0)" class="name" @click="dropdownShow(index)">
-                  <span>{{item.idc_name}}</span>
-                  <span>{{item.idc_Remarks}}</span>
-                  <Icon type="arrow-down-b" class="name-icon"></Icon>
-                </a>
-                <span class="del-btn" @click="delteMacRoom(index)"><Icon type="ios-trash-outline"></Icon>删除</span>
-                <span class="modifier-btn" @click="modifier(index)"><Icon type="ios-compose-outline"></Icon>修改</span>
-              </div>
-              <div slot="list" class="dropwdown-item" ref="dropdownItem">
-                  <div class="item defend">
-                    <span>全墙防护总流量：{{item.idc_config.idc_flow_total }} (mb/s)</span>
-                  </div>
-                  <div class="item ip-flow">
-                    <span>默认IP流量：{{item.idc_config.idc_overtop_flow }} (mb/s)</span>
-                  </div>
-                  <div class="item ip-time">
-                    <span>默认IP牵引时间：{{item.idc_config.idc_tow_default_time }} (分钟)</span>
-                  </div>
-                  <div class="item pull-time">
-                    <div class="pull">
-                      <p>自动延长牵引时间策略</p>
-                      <div class="pull-item">
-                        <span>生效时间：{{item.idc_config.idc_set_tow_time }} (分钟) </span>
-                        <span>超出次数1：{{item.idc_config.idc_one_tow_cum}} (次)</span>
-                        <span>封停时间1: {{item.idc_config.idc_one_tow_time}} (分钟)</span>
-                        <span>超出次数2：{{item.idc_config.idc_two_tow_cum}} (次)</span>
-                        <span>封停时间2: {{item.idc_config.idc_two_tow_time}} (分钟)</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="item white-list">
-                    <p>客户端白名单ip:</p>
-                    <p v-for="(val, index) in item.idc_towopenip" :key="index">
-                      <span>{{index}}</span>
-                      <span>备注：{{val}}</span>
-                    </p>
-                  </div>
-                  <div class="item ip-derss">
-                    <span>客户端ip地址：{{item.idc_towip}}</span>
-                  </div>
-                  <div class="item firewall-num">
-                    <span>防火墙台数：{{item.idc_config.idc_fw_num}} (台)</span>
-                  </div>
-                </div>
-            </div>
-          </li>
-      </ul>
+    <!--<div class="admin-list">-->
+      <!--<ul>-->
+          <!--<li v-for="(item, index) in adminData" :key="index" class="item-list">-->
+            <!--<div class="dropdown">-->
+              <!--<div class="dropdown-header">-->
+                <!--<a href="javascript:void(0)" class="name" @click="dropdownShow(index)">-->
+                  <!--<span>{{item.idc_name}}</span>-->
+                  <!--<span>{{item.idc_Remarks}}</span>-->
+                  <!--<Icon type="arrow-down-b" class="name-icon"></Icon>-->
+                <!--</a>-->
+                <!--<span class="del-btn" @click="delteMacRoom(index)"><Icon type="ios-trash-outline"></Icon>删除</span>-->
+                <!--<span class="modifier-btn" @click="modifier(index)"><Icon type="ios-compose-outline"></Icon>修改</span>-->
+              <!--</div>-->
+              <!--<div slot="list" class="dropwdown-item" ref="dropdownItem">-->
+                  <!--<div class="item defend">-->
+                    <!--<span>全墙防护总流量：{{item.idc_config.idc_flow_total }} (mb/s)</span>-->
+                  <!--</div>-->
+                  <!--<div class="item ip-flow">-->
+                    <!--<span>默认IP流量：{{item.idc_config.idc_overtop_flow }} (mb/s)</span>-->
+                  <!--</div>-->
+                  <!--<div class="item ip-time">-->
+                    <!--<span>默认IP牵引时间：{{item.idc_config.idc_tow_default_time }} (分钟)</span>-->
+                  <!--</div>-->
+                  <!--<div class="item pull-time">-->
+                    <!--<div class="pull">-->
+                      <!--<p>自动延长牵引时间策略</p>-->
+                      <!--<div class="pull-item">-->
+                        <!--<span>生效时间：{{item.idc_config.idc_set_tow_time }} (分钟) </span>-->
+                        <!--<span>超出次数1：{{item.idc_config.idc_one_tow_cum}} (次)</span>-->
+                        <!--<span>封停时间1: {{item.idc_config.idc_one_tow_time}} (分钟)</span>-->
+                        <!--<span>超出次数2：{{item.idc_config.idc_two_tow_cum}} (次)</span>-->
+                        <!--<span>封停时间2: {{item.idc_config.idc_two_tow_time}} (分钟)</span>-->
+                      <!--</div>-->
+                    <!--</div>-->
+                  <!--</div>-->
+                  <!--<div class="item white-list">-->
+                    <!--<p>客户端白名单ip:</p>-->
+                    <!--<p v-for="(val, index) in item.idc_towopenip" :key="index">-->
+                      <!--<span>{{index}}</span>-->
+                      <!--<span>备注：{{val}}</span>-->
+                    <!--</p>-->
+                  <!--</div>-->
+                  <!--<div class="item ip-derss">-->
+                    <!--<span>客户端ip地址：{{item.idc_towip}}</span>-->
+                  <!--</div>-->
+                  <!--<div class="item firewall-num">-->
+                    <!--<span>防火墙台数：{{item.idc_config.idc_fw_num}} (台)</span>-->
+                  <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+          <!--</li>-->
+      <!--</ul>-->
+    <!--</div>-->
+    <div class="table">
+      <i-table :columns="columns3" :data="adminData"></i-table>
     </div>
     <div class="modal">
       <Modal v-model="macRoomAdd" @on-cancel="cancelAddRoom">
@@ -265,10 +268,67 @@
 
 <script>
 import util from '../.././util/index'
+import tableExpand from './tableExpand'
 export default {
   name: 'allAdmin',
   data () {
     return {
+      columns3: [
+        {
+          type: 'expand',
+          width: 50,
+          render: (h, params) => {
+            return h(tableExpand, {
+              props: {
+                data: params.row
+              }
+            })
+          }
+        },
+        {
+          title: '机房名字',
+          key: 'idc_name'
+        },
+        {
+          title: '机房备注',
+          key: 'idc_Remarks'
+        },
+        {
+          title: '操作',
+          key: 'option',
+          width: 250,
+          align: 'center',
+          render: (h, params) => {
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.modifier(params.index)
+                  }
+                }
+              }, '修改机房'),
+              h('Button', {
+                props: {
+                  type: 'error',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    this.delteMacRoom(params.index)
+                  }
+                }
+              }, '删除机房')
+            ])
+          }
+        }
+      ],
       adminData: [], // 全局查看数据
       macRoomAdd: false, // 机房添加 modal 弹出
       macConfig: { // modla 填写的机房配置的信息
@@ -612,6 +672,9 @@ export default {
   },
   mounted () {
     this.getData()
+  },
+  components: {
+    tableExpand
   }
 }
 </script>
@@ -624,90 +687,8 @@ export default {
   .admin-add{
     margin-bottom: 15px;
   }
-  .admin-list ul .item-list{
-    width: 100%;
-    margin-bottom: 25px;
-    list-style: none;
-    background: #fff;
-    transition: all .2s linear;
-  }
-  .admin-list ul li:last-child{
+  .table{
     margin-bottom: 150px;
-  }
-  .admin-list ul .item-list:hover{
-    transform: translateY(-5px);
-  }
-  .admin-list .dropdown-header{
-    transition: all .3s ease;
-  }
-  .admin-list .dropdown-header:hover{
-    box-shadow: -3px 0 15px 3px rgba(0, 0, 0, 0.1);
-  }
-  .admin-list ul li .name{
-    display: inline-block;
-    padding: 15px 15px;
-    font-size: 16px;
-    color: #666;
-  }
-  .admin-list ul li .name:hover{
-    color: #57a3f3;
-  }
-  .admin-list ul li .dropwdown-item{
-    height: 0px;
-    opacity: 0;
-    display: none;
-    padding: 10px;
-    text-align: left;
-    transition: all .4s linear;
-    box-shadow: 0 1px 6px rgba(0,0,0,.2);
-  }
-  .admin-list .modifier-btn, .admin-list .del-btn{
-    float: right;
-    padding: 15px 10px;
-    color: #03a9f4;
-    cursor: pointer;
-    transition: color .3s ease;
-    font-size: 16px;
-  }
-  .admin-list .modifier-btn:hover, .admin-list .del-btn:hover{
-    color: #1e88e5;
-  }
-  .admin-list ul li .dropwdown-item .item{
-    padding: 15px 10px 0;
-    font-size: 14px;
-    color: #495060;
-    border-bottom: 1px solid #E4E7ED;
-  }
-  .admin-list ul li .dropwdown-item .item:last-child{
-    padding-bottom: 10px;
-    border: none;
-  }
-  .admin-list ul li .dropwdown-item .pull-time.item{
-    border: none;
-    padding: 15px 0 0 0;
-  }
-  .pull{
-    width: 100%;
-    border: 1px solid #DCDFE6;
-    padding: 10px;
-  }
-  .pull p{
-    text-align: center;
-  }
-  .pull-item{
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .pull-item span{
-    display: inline-block;
-    width: 20%;
-    margin-top: 10px;
-  }
-  .white-list p:first-child{
-    margin-top: 0;
-  }
-  .white-list p{
-    margin-top: 10px;
   }
   .title{
     width: 100%;
