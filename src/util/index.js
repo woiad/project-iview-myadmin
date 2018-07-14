@@ -60,3 +60,11 @@ util.changeValue = function (unchangeData, changeData) { // 检测单签权限�
   }
   return changeFlag
 }
+util.regIp = function (ip) {
+  let reg = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+  if (reg.test(ip)) {
+    return true
+  } else {
+    return false
+  }
+}

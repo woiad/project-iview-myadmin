@@ -370,17 +370,6 @@ export default {
     }
   },
   methods: {
-    dropdownShow (index) { // 机房详细信息的显示，即下拉
-      if (this.$refs.dropdownItem[index].style.display !== 'block') {
-        this.$refs.dropdownItem[index].style.height = '100%'
-        this.$refs.dropdownItem[index].style.opacity = 1
-        this.$refs.dropdownItem[index].style.display = 'block'
-      } else {
-        this.$refs.dropdownItem[index].style.height = '0px'
-        this.$refs.dropdownItem[index].style.opacity = 0
-        this.$refs.dropdownItem[index].style.display = 'none'
-      }
-    },
     addRoom () { // 添加机房的 modal 弹出
       this.macRoomAdd = true
     },
@@ -398,6 +387,10 @@ export default {
       let ipObj = {}
       if (this.addTitle === '增加白名单ip') { // 区别 modal 是添加白名单ip，还是修改白名单ip
         if (this.addIp.ipName !== '' && this.addIp.ipRemarks !== '') {
+          if (!util.regIp(this.addIp.ipName)) {
+            alert('ip格式不正确！')
+            return true
+          }
           ipObj.ipName = this.addIp.ipName
           ipObj.ipRemarks = this.addIp.ipRemarks
           this.whilteListIp.push(ipObj)
@@ -409,6 +402,10 @@ export default {
         }
       } else if (this.addTitle === '白名单ip修改' && this.distinction !== '修改') { // 修改白名单ip
         if (this.addIp.ipName !== '' && this.addIp.ipRemarks !== '') {
+          if (!util.regIp(this.addIp.ipName)) {
+            alert('ip格式不正确！')
+            return true
+          }
           this.$refs.AddipName[this.modifierIndex].innerHTML = this.addIp.ipName
           this.$refs.AddipRemarks[this.modifierIndex].innerHTML = this.addIp.ipRemarks
           this.addIpCancel()
@@ -419,6 +416,14 @@ export default {
         }
       }
       if (this.distinction === '修改') { // 此处修改是机房修改处的白名单修改
+        if (this.addIp.ipname === '' || this.addIp.ipRemarks === '') {
+          alert('请填写完整数据!')
+          return true
+        }
+        if (!util.regIp(this.addIp.ipName)) {
+          alert('ip格式不正确！')
+          return true
+        }
         if (this.addIp.ipName !== '') {
           this.$refs.ipName[this.modifierIndex].innerHTML = this.addIp.ipName
         }
@@ -430,7 +435,6 @@ export default {
       }
     },
     midifierAddip (index) { // 修改 添加客户端白名单ip 和 客户端白名单ip 的白名单ip
-      console.log(this.$refs)
       this.addIpShow = true
       this.addTitle = '白名单ip修改'
       this.modifierIndex = index
@@ -473,6 +477,10 @@ export default {
         window.alert('请填写完成机房信息！')
         return true
       }
+      if (!util.regIp(this.macConfig.macTowIp)) {
+        alert('ip格式不正确！')
+        return true
+      }
       let subObj = {}
       let ip = {}
       let remarks = {}
@@ -500,6 +508,7 @@ export default {
         .then(res => {
           this.$Message.info('机房添加成功')
           this.getData()
+          this.cancelAddRoom()
           this.macRoomAdd = false
           console.log(res)
         })
