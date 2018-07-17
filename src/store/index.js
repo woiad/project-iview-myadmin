@@ -7,6 +7,7 @@ const store = new Vuex.Store({
   state: {
     active: '',
     userLevel: {},
+    scrollLeft: 0,
     flag: false,
     currentPath: [
       {

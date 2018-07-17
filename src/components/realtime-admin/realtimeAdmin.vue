@@ -1,7 +1,7 @@
 <template>
   <div class="user-container">
     <div class="table">
-      <i-table :columns="columns3" :data="originData" @on-expand="expand"></i-table>
+      <i-table :columns="columns3" :data="dataColumns" @on-expand="expand" ref="table" @on-row-click="rowClick"></i-table>
     </div>
     <div ref="spin">
       <Spin fix>
@@ -28,48 +28,38 @@ export default {
               props: {
                 row: params.row,
                 level: this.levelMess
-              }
+              },
+              ref: 'myref'
             })
           }
         },
         {
           title: '机房名称',
-          key: 'idc_name'
+          key: 'idc_name',
+          _expanded: true
         }
       ],
       levelMess: {},
       originData: [],
-      timing: '',
-      expandName: []
+      rowIndex: ''
     }
   },
   methods: {
     getData () {
       this.$post('http://113.105.246.233:9100/webapi/realtimetow', {key: 'show'})
         .then(res => {
-          console.log(res)
           this.$refs.spin.style.display = 'none'
           for (let i = 0; i < res.length; i++) {
-            if (res[i].status === 'true') {
-              res[i].status = true
-            } else {
-              res[i].status = false
-            }
             for (let k = 0; k < res[i].data.length; k++) {
               if (typeof res[i].data[k].tow_value === 'string') {
                 res[i].data[k].tow_value = util.evil(res[i].data[k].tow_value)
               }
             }
             if (this.originData.length === res.length && this.originData[i].idc_name === res[i].idc_name) {
-              for (let j = 0; j < this.expandName.length; j++) {
-                if (res[i].idc_name === this.expandName[j]) {
-                  res[i]._expanded = true
-                }
-              }
               this.originData.splice(i, 1, res[i])
             } else {
               this.originData.push(res[i])
-              this.originData[i]._expanded = false
+              this.originData[i]._expanded = true
             }
           }
         })
@@ -77,27 +67,37 @@ export default {
           console.log(err)
         })
     },
+    rowClick (data, index) {
+      this.rowIndex = index
+    },
     expand (row, status) {
-      if (status) {
-        this.expandName.push(row.idc_name)
-      } else {
-        for (let i = 0; i < this.expandName.length; i++) {
-          if (this.expandName[i] === row.idc_name) {
-            this.expandName.splice(i, 1)
+      this.originData.forEach((item, index) => {
+        if (row.idc_name === item.idc_name && index === 0) {
+          for (let i = 0; i < this.originData.length; i++) {
+            this.originData[i]._expanded = true
           }
+        }
+      })
+    }
+  },
+  mounted () {
+    let level = {}
+    level = this.$store.state.userLevel
+    if (level !== undefined) {
+      for (let i in level) {
+        if (i === this.$route.name) {
+          this.levelMess = level[i]
         }
       }
     }
-  },
-  created () {
     this.getData()
-    // setInterval(() => {
-    //   this.getData()
-    // }, 6000)
   },
   computed: {
     a () {
       return this.$store.state.userLevel
+    },
+    dataColumns () {
+      return this.originData
     }
   },
   watch: {
