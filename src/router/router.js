@@ -71,7 +71,7 @@ export const appRouter = [
     name: 'virtualAdmin',
     component: index,
     children: [
-      {path: 'index', name: '虚拟管理', component: () => import('@/components/virtual-admin/virtualAdmin'), meta: {title: '虚拟管理'}}
+      {path: 'index', name: '虚拟牵引', component: () => import('@/components/virtual-admin/virtualAdmin'), meta: {title: '虚拟牵引'}}
     ]
   },
   {
@@ -79,7 +79,23 @@ export const appRouter = [
     name: 'templateAdmin',
     component: index,
     children: [
-      {path: 'index', name: '模板管理', component: () => import('@/components/template-admin/templateAdmin2'), meta: {title: '模板管理'}}
+      {path: 'index', name: '权限模版', component: () => import('@/components/template-admin/templateAdmin2'), meta: {title: '权限模板'}}
+    ]
+  },
+  {
+    path: '/temporaryDefend',
+    name: 'temporaryDefend',
+    component: index,
+    children: [
+      {path: 'index', name: '临时防护管理', component: () => import('@/components/temporary-defend/temporaryDenfend'), meta: {title: '临时防护管理'}}
+    ]
+  },
+  {
+    path: '/logAdmin',
+    name: 'logAdmin',
+    component: index,
+    children: [
+      {path: 'index', name: '日志管理', component: () => import('@/components/log-admin/logAdmin'), meta: {title: '日志管理'}}
     ]
   }
 ]

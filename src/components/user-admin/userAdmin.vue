@@ -1,7 +1,7 @@
 <template>
   <div class="user-container">
     <div class="user-add">
-      <Button type="primary" icon="ios-plus-empty" @click="addUser">新增用户</Button>
+      <Button type="primary" icon="ios-plus-empty" @click="addUser" :disabled="levelMess['新建'] !== 'true'">新增用户</Button>
     </div>
     <div class="user-list">
       <i-table :columns="columnsData" :data="userData"></i-table>
@@ -169,7 +169,8 @@ export default {
               h('Button', {
                 props: {
                   type: 'primary',
-                  size: 'small'
+                  size: 'small',
+                  disabled: this.levelMess['修改'] !== 'true'
                 },
                 style: {
                   marginRight: '5px'
@@ -197,7 +198,8 @@ export default {
               h('Button', {
                 props: {
                   type: 'error',
-                  size: 'small'
+                  size: 'small',
+                  disabled: this.levelMess['删除'] !== 'true'
                 },
                 on: {
                   click: () => {
@@ -258,7 +260,8 @@ export default {
         ]
       }, // 设置表单校验
       userDelShow: false, // 删除用户的modal的隐藏与显示
-      delId: '' // 删除的索引
+      delId: '', // 删除的索引
+      levelMess: {}
     }
   },
   methods: {
@@ -497,6 +500,22 @@ export default {
   },
   mounted () {
     this.getUserData()
+  },
+  computed: {
+    a () {
+      return this.$store.state.userLevel
+    }
+  },
+  watch: {
+    a: {
+      handler: function (val) {
+        for (let i in val) {
+          if (i === this.$route.name) {
+            this.levelMess = val[i]
+          }
+        }
+      }
+    }
   }
 }
 </script>

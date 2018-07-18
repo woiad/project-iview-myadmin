@@ -116,7 +116,8 @@ export default {
             h('Button', {
               props: {
                 type: 'primary',
-                size: 'small'
+                size: 'small',
+                disabled: this.level['修改牵引时间'] !== 'true'
               },
               style: {
                 marginRight: '5px'
@@ -130,7 +131,8 @@ export default {
             h('Button', {
               props: {
                 type: 'error',
-                size: 'small'
+                size: 'small',
+                disabled: this.level['手动解封'] !== 'true'
               },
               style: {
                 marginRight: '5px'

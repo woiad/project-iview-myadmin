@@ -108,7 +108,16 @@ export default {
   .历史管理{
     background-image: url(../../assets/history.png);
   }
-  .虚拟管理{
+  .虚拟牵引{
     background-image: url(../../assets/virtual.png);
+  }
+  .权限模版{
+    background-image: url(../../assets/template.png);
+  }
+  .日志管理{
+    background-image: url(../../assets/log.png);
+  }
+  .临时防护管理{
+    background-image: url(../../assets/denfend.png);
   }
 </style>

@@ -41,7 +41,8 @@ export default {
             return h(maunalExpand, {
               props: {
                 row: params.row,
-                name: this.idc_name
+                name: this.idc_name,
+                level: this.levelMess
               }
             })
           }
@@ -59,7 +60,8 @@ export default {
             return h('Button', {
               props: {
                 type: 'primary',
-                size: 'small'
+                size: 'small',
+                disabled: this.levelMess['新建'] !== 'true'
               },
               on: {
                 click: () => {
@@ -77,16 +79,27 @@ export default {
         ip: '',
         remarks: ''
       },
-      buildInd: ''
+      buildInd: '',
+      levelMess: {}
     }
   },
   mounted () {
+    let levelObj = {}
+    levelObj = this.$store.state.userLevel
+    if (levelObj !== undefined) {
+      for (let i in levelObj) {
+        if (i === this.$route.name) {
+          this.levelMess = levelObj[i]
+        }
+      }
+    }
     this.getData()
   },
   methods: {
     getData () {
       this.$post('http://113.105.246.233:9100/webapi/public', {key: 'idc_root'})
         .then(res => {
+          console.log(res)
           res.forEach((item, index) => {
             this.idcData.push(item)
           })
@@ -116,8 +129,6 @@ export default {
         return true
       }
       let id = this.idcData[this.buildInd].id
-      console.log(id)
-      console.log(this.idcData)
       this.$post('http://113.105.246.233:9100/webapi/manualtow', {key: 'add', ip: this.buildData.ip, idc_root_id: id, remarks: this.buildData.remarks})
         .then(res => {
           this.$Message.info('添加成功')
@@ -127,6 +138,22 @@ export default {
         .catch(err => {
           this.$Message.info('添加失败' + err)
         })
+    }
+  },
+  computed: {
+    a () {
+      return this.$store.state.userLevel
+    }
+  },
+  watch: {
+    a: {
+      handler: function (val) {
+        for (let i in val) {
+          if (i === this.$route.name) {
+            this.levelMess = val[i]
+          }
+        }
+      }
     }
   }
 }

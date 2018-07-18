@@ -90,6 +90,7 @@ export default {
         }
       }
     }
+    console.log(this.levelMess)
     this.getData()
   },
   computed: {

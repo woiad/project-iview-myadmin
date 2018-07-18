@@ -303,7 +303,8 @@ export default {
               h('Button', {
                 props: {
                   type: 'primary',
-                  size: 'small'
+                  size: 'small',
+                  disabled: this.levelMess['修改'] !== 'true'
                 },
                 style: {
                   marginRight: '5px'
@@ -317,7 +318,8 @@ export default {
               h('Button', {
                 props: {
                   type: 'error',
-                  size: 'small'
+                  size: 'small',
+                  disabled: this.levelMess['删除'] !== 'true'
                 },
                 on: {
                   click: () => {
@@ -366,7 +368,8 @@ export default {
       },
       delIndex: '', // 删除机房的index
       macRoomDelShow: false, // 删除机房的 modal
-      modifierDataOriArr: [] // 添加的所有白名单ip，为了辨别，用户在修改时是否删除了白名单ip
+      modifierDataOriArr: [], // 添加的所有白名单ip，为了辨别，用户在修改时是否删除了白名单ip
+      levelMess: {}
     }
   },
   methods: {
@@ -680,7 +683,33 @@ export default {
     }
   },
   mounted () {
+    let levelObj = {}
+    levelObj = this.$store.state.userLevel
+    if (levelObj !== undefined) {
+      for (let i in levelObj) {
+        if (i === this.$route.name) {
+          this.levelMess = levelObj[i]
+        }
+      }
+    }
     this.getData()
+  },
+  computed: {
+    a () {
+      return this.$store.state.userLevel
+    }
+  },
+  watch: {
+    a: {
+      handler: function (val) {
+        debugger
+        for (let i in val) {
+          if (i === this.$route.name) {
+            this.levelMess = val[i]
+          }
+        }
+      }
+    }
   },
   components: {
     tableExpand

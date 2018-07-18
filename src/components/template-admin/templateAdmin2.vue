@@ -1,7 +1,7 @@
 <template>
   <div class="tem-container">
     <div class="build-tem">
-      <Button type="primary" icon="ios-plus-empty" @click="bulidTemplate">添加模板</Button>
+      <Button type="primary" icon="ios-plus-empty" @click="bulidTemplate" :disabled="levelMess['新建'] !== 'true'">添加模板</Button>
     </div>
     <div class="table">
       <i-table :columns="columnsData" :data="temData"></i-table>
@@ -112,7 +112,8 @@ export default {
               h('Button', {
                 props: {
                   type: 'primary',
-                  size: 'small'
+                  size: 'small',
+                  disabled: this.levelMess['修改'] !== 'true'
                 },
                 style: {
                   marginRight: '5px'
@@ -126,7 +127,8 @@ export default {
               h('Button', {
                 props: {
                   type: 'error',
-                  size: 'small'
+                  size: 'small',
+                  disabled: this.levelMess['删除'] !== 'true'
                 },
                 on: {
                   click: () => {
@@ -149,11 +151,37 @@ export default {
       optionTem: '', // 对话框title
       delConfirm: false, //  删除对话框弹出
       delInd: '', //  删除模板的索引
-      modifierInd: '' //  修改模板的索引
+      modifierInd: '', //  修改模板的索引
+      levelMess: {}
     }
   },
   mounted () {
+    let levelObj = {}
+    levelObj = this.$store.state.userLevel
+    if (levelObj !== undefined) {
+      for (let i in levelObj) {
+        if (i === this.$route.name) {
+          this.levelMess = levelObj[i]
+        }
+      }
+    }
     this.temShow()
+  },
+  computed: {
+    a () {
+      return this.$store.state.userLevel
+    }
+  },
+  watch: {
+    a: {
+      handler: function (val) {
+        for (let i in val) {
+          if (i === this.$route.name) {
+            this.levelMess = val[i]
+          }
+        }
+      }
+    }
   },
   methods: {
     // 修改权限模板

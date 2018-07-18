@@ -1,13 +1,13 @@
 <template>
   <div class="expand-container">
     <div class="table-expand">
-      <!--<div ref="spin">-->
-        <!--<Spin ref="spin">-->
-          <!--<Icon type="load-c" size=18 class="demo-spin-icon-load"></Icon>-->
-          <!--<div>Loading</div>-->
-        <!--</Spin>-->
-      <!--</div>-->
-      <i-table :columns="columnsData" :data="ipData"></i-table>
+      <div ref="spin">
+        <Spin ref="spin">
+          <Icon type="load-c" size=18 class="demo-spin-icon-load"></Icon>
+          <div>Loading</div>
+        </Spin>
+      </div>
+      <i-table :columns="columnsData" :data="ipData" v-if="loadingShow"></i-table>
     </div>
     <div class="modal">
       <Modal v-model="confirmShow" width="360">
@@ -45,6 +45,10 @@ export default {
           key: 'remarks'
         },
         {
+          title: '时间',
+          key: 'time'
+        },
+        {
           title: '操作',
           key: 'option',
           width: 100,
@@ -53,7 +57,8 @@ export default {
             return h('Button', {
               props: {
                 type: 'error',
-                size: 'small'
+                size: 'small',
+                disabled: this.level['删除'] !== 'true'
               },
               on: {
                 click: () => {
@@ -64,9 +69,108 @@ export default {
           }
         }
       ],
+      // originData: [
+      //   {
+      //     id: 1,
+      //     idc_id: 1,
+      //     idc_name: '德胜机房',
+      //     ip: '113.105.246.236',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 2,
+      //     idc_id: 1,
+      //     idc_name: '德胜机房',
+      //     ip: '113.105.246.235',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 3,
+      //     idc_id: 2,
+      //     idc_name: '香港机房',
+      //     ip: '113.105.246.23',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 4,
+      //     idc_id: 2,
+      //     idc_name: '香港机房',
+      //     ip: '113.105.246.22',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 5,
+      //     idc_id: 3,
+      //     idc_name: '北京机房',
+      //     ip: '113.105.246.20',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 6,
+      //     idc_id: 2,
+      //     idc_name: '北京机房',
+      //     ip: '113.105.246.21',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 7,
+      //     idc_id: 3,
+      //     idc_name: '深圳机房',
+      //     ip: '113.105.246.10',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 8,
+      //     idc_id: 3,
+      //     idc_name: '深圳机房',
+      //     ip: '113.105.246.11',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 9,
+      //     idc_id: 4,
+      //     idc_name: '广州机房',
+      //     ip: '113.105.246.23',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 9,
+      //     idc_id: 4,
+      //     idc_name: '广州机房',
+      //     ip: '113.105.246.22',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 10,
+      //     idc_id: 5,
+      //     idc_name: '新疆机房',
+      //     ip: '113.105.246.01',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   },
+      //   {
+      //     id: 11,
+      //     idc_id: 5,
+      //     idc_name: '新疆机房',
+      //     ip: '113.105.246.02',
+      //     remarks: '测试',
+      //     user_name: 'test'
+      //   }
+      // ],
       ipData: [],
       confirmShow: false,
-      confirmInd: ''
+      confirmInd: '',
+      loadingShow: false
     }
   },
   props: {
@@ -75,10 +179,21 @@ export default {
     },
     name: {
       type: String
+    },
+    level: {
+      type: Object
     }
   },
   created () {
     this.getData()
+    // this.ipData = []
+    // console.log(this.originData)
+    // this.originData.forEach((item, index) => {
+    //   console.log(item.idc_name)
+    //   if (item.idc_name === this.name) {
+    //     this.ipData.push(item)
+    //   }
+    // })
   },
   methods: {
     getData () {
@@ -90,6 +205,10 @@ export default {
             if (item.idc_name === this.name) {
               this.ipData.push(item)
             }
+            setTimeout(() => {
+              this.$refs.spin.style.display = 'none'
+              this.loadingShow = true
+            }, 500)
           })
         })
         .catch(err => {
