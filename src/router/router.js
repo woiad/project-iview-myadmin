@@ -1,4 +1,5 @@
 import index from '.././components/index'
+import logAdmin from '.././components/log-admin/logAdmin'
 export const otherRouter = {
   path: '/',
   name: 'home',
@@ -95,7 +96,21 @@ export const appRouter = [
     name: 'logAdmin',
     component: index,
     children: [
-      {path: 'index', name: '日志管理', component: () => import('@/components/log-admin/logAdmin'), meta: {title: '日志管理'}}
+      {
+        path: 'index',
+        name: '日志管理',
+        component: logAdmin,
+        redirect: '/logAdmin/index/loginLog',
+        children: [
+          {path: '/logAdmin/index/loginLog', name: '登陆历史', component: () => import('@/components/log-admin/log-modules/loginLog'), meta: {title: '登陆日志'}},
+          {path: '/logAdmin/index/manualLog', name: '手动封停日志', component: () => import('@/components/log-admin/log-modules/manualLog'), meta: {title: '手动封停日志'}},
+          {path: '/logAdmin/index/mistakeLog', name: '错误日志', component: () => import('@/components/log-admin/log-modules/mistakeLog'), meta: {title: '错误日志'}},
+          {path: '/logAdmin/index/optionLog', name: '操作日志', component: () => import('@/components/log-admin/log-modules/optionLog'), meta: {title: '操作日志'}},
+          {path: '/logAdmin/index/temporaryLog', name: '临时防护日志', component: () => import('@/components/log-admin/log-modules/temporaryLog'), meta: {title: '临时防护日志'}},
+          {path: '/logAdmin/index/tracLog', name: '牵引日志', component: () => import('@/components/log-admin/log-modules/tracLog'), meta: {title: '牵引日志'}},
+          {path: '/logAdmin/index/virtualLog', name: '虚拟日志', component: () => import('@/components/log-admin/log-modules/virtualLog'), meta: {title: '虚拟日志'}}
+        ]
+      }
     ]
   }
 ]

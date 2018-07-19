@@ -28,13 +28,25 @@
           <div class="item">
             <label>机房名称：&nbsp;{{defData.idc_name}}</label>
             <Select v-model="defData.idc_name"  placeholder="请选择机房">
-              <Option v-for="item in idcData" :value="item.idc_name" :key="item.idc_name">{{ item.idc_name }}</Option>
+              <Option v-for="item in idcList" :value="item.idc_name" :key="item.idc_name">{{ item.idc_name }}</Option>
             </Select>
           </div>
         </div>
         <div slot="footer">
           <Button @click="temCancel">重置</Button>
           <Button type="primary" @click="temSub">提交</Button>
+        </div>
+      </Modal>
+      <Modal v-model="confirmShow" width="360">
+        <p slot="header" style="color: rgb(255, 102, 0);text-align: center">
+          <Icon type="information-circled"></Icon>
+          <span>删除确认</span>
+        </p>
+        <div style="text-align: center">
+          <p>确定解删除ip?</p>
+        </div>
+        <div slot="footer">
+          <Button type="error" size="large" long @click="confirmDec">确定</Button>
         </div>
       </Modal>
     </div>
@@ -50,20 +62,47 @@ export default {
     return {
       columnsData: [
         {
-          type: 'expand',
-          width: 50,
-          render: (h, params) => {
-            return h(temporaryExpand, {
-              props: {
-                row: params.row,
-                level: this.levelMess
-              }
-            })
-          }
+          title: '机房名称',
+          key: 'idc_root_name'
         },
         {
-          title: '机房名称',
-          key: 'idc_name'
+          title: 'ip',
+          key: 'ip'
+        },
+        {
+          title: '开始时间',
+          key: 'start_time'
+        },
+        {
+          title: '结束时间',
+          key: 'end_time'
+        },
+        {
+          title: '防护值(单位：mb/s)',
+          key: 'idc_ip_bps'
+        },
+        {
+          title: '牵引时间(单位：分钟)',
+          key: 'idc_ip_tow_time'
+        },
+        {
+          title: '操作',
+          width: 100,
+          align: 'center',
+          render: (h, params) => {
+            return h('Button', {
+              props: {
+                type: 'error',
+                size: 'small',
+                disabled: this.levelMess['删除'] !== 'true'
+              },
+              on: {
+                click: () => {
+                  this.delClick(params)
+                }
+              }
+            }, '删除')
+          }
         }
       ],
       idcData: [],
@@ -75,20 +114,32 @@ export default {
         time: '',
         idc_ip_bps: '',
         idc_ip_tow_time: ''
-      }
+      },
+      confirmShow: false,
+      idcList: []
     }
   },
   methods: {
     getData () {
-      this.$post('http://113.105.246.233:9100/webapi/public', {key: 'idc_root'})
+      this.idcData = []
+      this.$post('http://113.105.246.233:9100/webapi/temfwip', {key: 'show'})
         .then(res => {
-          this.idcData = []
-          res.forEach((item, index) => {
-            this.idcData.push(item)
-          })
+          console.log(res)
+          if (res instanceof Array) {
+            res.forEach((item, index) => {
+              this.idcData.push(item)
+            })
+          }
         })
         .catch(err => {
           console.log(err)
+        })
+      this.$post('http://113.105.246.233:9100/webapi/public', {key: 'idc_root'})
+        .then(res => {
+          this.idcList = []
+          res.forEach((item, index) => {
+            this.idcList.push(item)
+          })
         })
     },
     addTem () {
@@ -111,9 +162,9 @@ export default {
         return true
       }
       let id = ''
-      for (let i = 0; i < this.idcData.length; i++) {
-        if (this.defData.idc_name === this.idcData[i].idc_name) {
-          id = this.idcData[i].id
+      for (let i = 0; i < this.idcList.length; i++) {
+        if (this.defData.idc_name === this.idcList[i].idc_name) {
+          id = this.idcList[i].id
         }
       }
       let obj = {}
@@ -133,6 +184,23 @@ export default {
         })
         .catch(err => {
           this.$Message.info('添加失败' + err)
+        })
+    },
+    delClick (params) {
+      this.confirmShow = true
+      this.delData = params
+    },
+    confirmDec () {
+      console.log(this.delData.row.ip)
+      let ip = this.delData.row.ip
+      this.$post('http://113.105.246.233:9100/webapi/temfwip', {key: 'del', ip: ip})
+        .then(res => {
+          this.$Message.info('删除成功')
+          this.getData()
+          this.confirmShow = false
+        })
+        .catch(err => {
+          this.$Message.info('删除失败' + err)
         })
     }
   },

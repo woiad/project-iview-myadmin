@@ -702,7 +702,6 @@ export default {
   watch: {
     a: {
       handler: function (val) {
-        debugger
         for (let i in val) {
           if (i === this.$route.name) {
             this.levelMess = val[i]

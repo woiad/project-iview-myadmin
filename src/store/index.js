@@ -26,6 +26,7 @@ const store = new Vuex.Store({
   mutations: {
     changeActive (state, name) {
       state.active = name
+      localStorage.setItem('name', name)
     },
     setCurrentPath (state, item) {
       let obj = {}

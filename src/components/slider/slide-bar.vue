@@ -28,6 +28,15 @@ export default {
   },
   watch: {
     '$route' (to, form) {
+      if (typeof this.$store.state.userLevel === 'object') {
+        for (let i in this.$store.state.userLevel['日志管理']) {
+          if (i === to.name) {
+            console.log(form)
+            this.$store.commit('changeActive', '日志管理')
+            return true
+          }
+        }
+      }
       this.$store.commit('changeActive', to.name)
     }
   },
@@ -39,6 +48,9 @@ export default {
       ]
     },
     changeActive () {
+      if (this.$store.state.active === '') {
+        return localStorage.getItem(name)
+      }
       return this.$store.state.active
     }
   },
@@ -51,6 +63,18 @@ export default {
       this.$router.push({name: name})
     },
     init () {
+      if (JSON.stringify(this.$store.state.userLevel) === '{}') {
+        let activeName = localStorage.getItem('name')
+        this.$store.commit('changeActive', activeName)
+        return true
+      } else if (typeof this.$store.state.userLevel === 'object') {
+        for (let i in this.$store.state.userLevel['日志管理']) {
+          if (i === this.$route.name) {
+            this.$store.commit('changeActive', '日志管理')
+            return true
+          }
+        }
+      }
       this.$store.commit('changeActive', this.$route.name)
     }
   }
