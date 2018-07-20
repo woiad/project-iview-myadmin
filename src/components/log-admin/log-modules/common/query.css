@@ -1,0 +1,25 @@
+.query{
+  margin-bottom: 15px;
+  width: 100%;
+}
+.query .but{
+  display: inline-block;
+  margin-left: 8px;
+}
+.query h1{
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.query-time{
+  display: inline-block;
+}
+.time{
+  display: inline-block;
+}
+.end-time{
+  margin-left: 15px;
+}
+.query-ip{
+  display: inline-block;
+  margin-left: 30px;
+}

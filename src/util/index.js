@@ -68,6 +68,25 @@ util.regIp = function (ip) {
     return false
   }
 }
-util.timeTransform = function (time) {
-  return time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ' ' + time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds()
+util.timeTransform = function (date) {
+  let year = date.getFullYear()
+  let month = util.addZero(date.getMonth() + 1)
+  let data = util.addZero(date.getDate())
+  let hour = util.addZero(date.getHours())
+  let miunte = util.addZero(date.getMinutes())
+  let second = util.addZero(date.getSeconds())
+  return year + '-' + month + '-' + data + ' ' + hour + ':' + miunte + ':' + second
+}
+util.addZero = function (time) {
+  if (time < 10) {
+    return '0' + time
+  } else {
+    return time
+  }
+}
+util.addDat = function (date, days) {
+  let dat = new Date(date)
+  dat.setDate(dat.getDate() + days)
+  console.log(dat)
+  return util.timeTransform(dat)
 }

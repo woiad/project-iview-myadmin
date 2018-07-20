@@ -18,6 +18,7 @@
                   </a>
                   <DropdownMenu slot="list">
                     <DropdownItem name="ownSpace">个人中心</DropdownItem>
+                    <DropdownItem name="modifierPass" divided>修改密码</DropdownItem>
                     <DropdownItem name="loginout" divided>退出登录</DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
@@ -37,6 +38,25 @@
         </Layout>
       </layout>
     </div>
+    <div class="modal">
+      <Modal v-model="modifierPasswordShow" title="修改密码">
+        <Form ref="editPasswordForm" :model="editPasswordForm" :label-width="100" label-position="right" :rules="passwordValidate">
+          <!--<FormItem label="原密码" prop="oldPass" :error="oldPassError">-->
+          <!--<Input v-model="editPasswordForm.oldPass" placeholder="请输入现在使用的密码" ></Input>-->
+          <!--</FormItem>-->
+          <FormItem label="新密码" prop="newPass">
+            <Input v-model="editPasswordForm.newPass" placeholder="请输入新密码，至少6位字符" type="password"></Input>
+          </FormItem>
+          <FormItem label="确认新密码" prop="rePass">
+            <Input v-model="editPasswordForm.rePass" placeholder="请再次输入新密码" type="password"></Input>
+          </FormItem>
+        </Form>
+        <div slot="footer">
+          <Button type="text" @click="cancelEditPass">取消</Button>
+          <Button type="primary" @click="saveEditPass">保存</Button>
+        </div>
+      </Modal>
+    </div>
   </div>
 </template>
 
@@ -47,6 +67,7 @@ import accessList from './access-list/accessList'
 import navBar from './navBar/navBar'
 import cookies from 'js-cookie'
 import tagsOpenList from './tagOpenList/tags-opend-list'
+import md5 from 'js-md5'
 export default {
   name: 'index',
   components: {
@@ -61,13 +82,40 @@ export default {
     }
   },
   data () {
+    const valideRePassword = (rule, value, callback) => {
+      if (value !== this.editPasswordForm.newPass) {
+        callback(new Error('两次密码输入不一致'))
+      } else {
+        callback()
+      }
+    }
     return {
       isCollapsed: false,
       message: {},
       accessList: {},
       username: cookies.get('user_accounts'),
       iconShow: false,
-      textShow: true
+      textShow: true,
+      modifierPasswordShow: false,
+      editPasswordForm: {
+        oldPass: '',
+        newPass: '',
+        rePass: ''
+      },
+      passwordValidate: {
+        oldPass: [
+          {required: true, message: '请输入原密码', trigger: 'blur'}
+        ],
+        newPass: [
+          {required: true, message: '请输入新密码', trigger: 'blur'},
+          {min: 6, message: '请至少输入6个字符', trigger: 'blur'},
+          {max: 32, message: '最多输入32个字符', trigger: 'blur'}
+        ],
+        rePass: [
+          {required: true, message: '请再次输入新密码', trigger: 'blur'},
+          {validator: valideRePassword, trigger: 'blur'}
+        ]
+      }
     }
   },
   methods: {
@@ -76,10 +124,21 @@ export default {
     },
     handleClickUserDropdown (name) {
       if (name === 'loginout') {
-        cookies.remove('user_accounts')
-        this.$router.push({name: 'login'})
+        axios.get('http://113.105.246.233:9100/login_out')
+          .then(res => {
+            console.log(res)
+            this.$Message.info('退出成功')
+          })
+          .catch(err => {
+            console.log(err)
+            this.$Message.info('退出失败' + err)
+          })
+        // cookies.remove('user_accounts')
+        // this.$router.push({name: 'login'})
       } else if (name === 'ownSpace') {
         this.$router.push({name: '个人中心'})
+      } else {
+        this.modifierPasswordShow = true
       }
     },
     collapsedSider () {
@@ -99,6 +158,33 @@ export default {
       } else {
         return 0
       }
+    },
+    cancelEditPass () { // 取消修改密码
+      this.modifierPasswordShow = false
+      this.editPasswordForm.newPass = ''
+      this.editPasswordForm.rePass = ''
+    },
+    saveEditPass () { // 保存修改后的密码
+      this.$refs['editPasswordForm'].validate((valid) => {
+        if (valid) {
+          this.$post('http://113.105.246.233:9100/webapi/user', {
+            key: 'updatepwd',
+            pwd: md5(this.editPasswordForm.rePass)
+          })
+            .then(res => {
+              console.log(res)
+              if (res[1] === 200) {
+                this.$Message.info('密码修改成功')
+                this.modifierPasswordShow = false
+                this.editPasswordForm.newPass = ''
+                this.editPasswordForm.rePass = ''
+              }
+            })
+            .catch(err => {
+              this.$Message.info('修改密码失败' + err)
+            })
+        }
+      })
     }
   },
   mounted () {

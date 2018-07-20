@@ -1,13 +1,119 @@
 <template>
-  <div>manualLog</div>
+  <div class="manual-container">
+    <div class="query">
+      <div class="query-time">
+        <div class="start-time time">
+          <DatePicker type="date" placeholder="请选择开始时间" style="width: 200px" v-model="time.start"></DatePicker>
+        </div>
+        <div class="end-time time">
+          <DatePicker type="date" placeholder="请选择结束时间" style="width: 200px" v-model="time.end" :options="endOptions"></DatePicker>
+        </div>
+      </div>
+      <div class="query-ip">
+        <i-input style="width: 200px" placeholder="请输入ip" v-model="ip"></i-input>
+        <div class="but">
+          <Button type="primary" @click="ipQuery">查询</Button>
+        </div>
+      </div>
+    </div>
+    <div class="table">
+      <i-table :columns="columnsData" :data="manualData"></i-table>
+    </div>
+  </div>
 </template>
 
 <script>
+import util from '../../.././util/index'
 export default {
-  name: 'manualLog'
+  name: 'manualLog',
+  data () {
+    return {
+      endOptions: {
+        disabledDate: (data) => {
+          if (this.time.start !== null) {
+            return data && data.valueOf() < this.time.start.valueOf() + 86400000
+          }
+        }
+      },
+      columnsData: [
+        {
+          title: '机房名称',
+          key: 'idc_root_name'
+        },
+        {
+          title: 'ip地址',
+          key: 'ip'
+        },
+        {
+          title: '时间',
+          key: 'time'
+        },
+        {
+          title: '操作人',
+          key: 'opername'
+        },
+        {
+          title: '操作类型',
+          key: 'type'
+        }
+      ],
+      manualData: [],
+      time: {
+        start: '',
+        end: ''
+      },
+      ip: ''
+    }
+  },
+  methods: {
+    getData () {
+      let obj = {}
+      if (this.time.start !== '' && this.time.end !== '') {
+        obj.time_start = util.timeTransform(this.time.start)
+        obj.time_end = util.timeTransform(this.time.end)
+      }
+      if (this.time.start === '' && this.time.end === '' && this.ip !== '') {
+        obj.time_start = util.timeTransform(new Date())
+        obj.time_end = util.addDat(obj.time_start, 1)
+      }
+      if (this.ip !== '') {
+        obj.ip = this.ip
+      }
+      let chart = JSON.stringify(obj)
+      this.$post('http://113.105.246.233:9100/webapi/log', {key: 'manualtow', content: chart})
+        .then(res => {
+          this.manualData = []
+          if (JSON.stringify(res) !== '{}') {
+            res.forEach((item, index) => {
+              this.manualData.push(item)
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    ipQuery () {
+      if (this.ip === '' && this.time.start === '' && this.time.end === '') {
+        alert('请输入查询条件!')
+        return true
+      }
+      if (!util.regIp(this.ip) && this.ip !== '') {
+        alert('输入ip格式不正确！')
+        return true
+      }
+      this.getData()
+    }
+  },
+  mounted () {
+    this.getData()
+  }
 }
 </script>
 
 <style scoped>
-
+  @import 'common/query.css';
+  .manual-container{
+    padding: 14px 16px;
+  }
 </style>

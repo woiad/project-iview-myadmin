@@ -39,6 +39,7 @@ export default {
         .then(res => {
           this.levelMess = res.user_level['日志管理']
           delete this.levelMess['status']
+          delete this.levelMess['虚拟日志']
         })
         .catch(err => {
           console.log(err)

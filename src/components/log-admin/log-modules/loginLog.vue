@@ -2,19 +2,14 @@
   <div class="login-log-container">
     <div class="query">
       <div class="query-time">
-        <h1>时间查询</h1>
         <div class="start-time time">
-          <DatePicker type="date" @on-change="startTime" placeholder="请选择开始时间" style="width: 200px" v-model="time.start"></DatePicker>
+          <DatePicker type="date" placeholder="请选择开始时间" style="width: 200px" v-model="time.start"></DatePicker>
         </div>
         <div class="end-time time">
           <DatePicker type="date" placeholder="请选择结束时间" style="width: 200px" v-model="time.end" :options="endOptions"></DatePicker>
         </div>
-        <div class="but">
-          <Button type="primary" @click="timeQuery">查询</Button>
-        </div>
       </div>
       <div class="query-ip">
-        <h1>输入ip查询</h1>
         <i-input style="width: 200px" placeholder="请输入ip" v-model="ip"></i-input>
         <div class="but">
           <Button type="primary" @click="ipQuery">查询</Button>
@@ -56,9 +51,9 @@ export default {
         end: ''
       },
       endOptions: {
-        disabledDate (data) {
+        disabledDate: (data) => {
           if (this.time.start !== null) {
-            return data && this.time.start.getDate().valueOf() > data.getData().valueOf()
+            return data && data.valueOf() < this.time.start.valueOf() + 86400000
           }
         }
       },
@@ -72,6 +67,10 @@ export default {
       if (this.time.start !== '' && this.time.end !== '') {
         obj.time_start = util.timeTransform(this.time.start)
         obj.time_end = util.timeTransform(this.time.end)
+      }
+      if (this.time.start === '' && this.time.end === '' && this.ip !== '') {
+        obj.time_start = util.timeTransform(new Date())
+        obj.time_end = util.addDat(obj.time_start, 1)
       }
       if (this.ip !== '') {
         obj.ip = this.ip
@@ -92,32 +91,16 @@ export default {
           console.log(err)
         })
     },
-    timeQuery () {
-      if (this.time.start === '') {
-        alert('请选择开始时间！')
-        return true
-      }
-      if (this.time.end === '') {
-        alert('请选择结束时间！')
-        return true
-      }
-      console.log(util.timeTransform(this.time.start))
-      console.log(util.timeTransform(this.time.end))
-      this.getData()
-    },
     ipQuery () {
-      if (this.ip === '') {
-        alert('请输入ip地址!')
+      if (this.ip === '' && this.time.start === '' && this.time.end === '') {
+        alert('请输入查询条件!')
         return true
       }
-      if (!util.regIp(this.ip)) {
+      if (!util.regIp(this.ip) && this.ip !== '') {
         alert('输入ip格式不正确！')
         return true
       }
       this.getData()
-    },
-    startTime () {
-      console.log(this.time.start)
     }
   },
   mounted () {
@@ -127,32 +110,8 @@ export default {
 </script>
 
 <style scoped>
+  @import 'common/query.css';
   .login-log-container{
     padding: 14px 16px;
-  }
-  .login-log-container .query{
-    margin-bottom: 15px;
-    width: 100%;
-  }
-  .login-log-container .query .but{
-    display: inline-block;
-    margin-left: 8px;
-  }
-  .login-log-container .query h1{
-    font-size: 16px;
-    margin-bottom: 8px;
-  }
-  .login-log-container .query-time{
-    display: inline-block;
-  }
-  .login-log-container .query .time {
-    display: inline-block;
-  }
-  .login-log-container .query .end-time{
-    margin-left: 15px;
-  }
-  .login-log-container .query-ip{
-    display: inline-block;
-    margin-left: 30px;
   }
 </style>

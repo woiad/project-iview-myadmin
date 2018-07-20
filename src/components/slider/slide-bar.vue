@@ -31,7 +31,6 @@ export default {
       if (typeof this.$store.state.userLevel === 'object') {
         for (let i in this.$store.state.userLevel['日志管理']) {
           if (i === to.name) {
-            console.log(form)
             this.$store.commit('changeActive', '日志管理')
             return true
           }
