@@ -499,6 +499,9 @@ export default {
     }
   },
   mounted () {
+    if (JSON.stringify(this.$store.state.userLevel) !== '{}' && this.$store.state.userLevel !== undefined) {
+      this.levelMess = this.$store.state.userLevel[this.$route.name]
+    }
     this.getUserData()
   },
   computed: {
@@ -541,7 +544,7 @@ export default {
   }
   .user-access-tem .access-text{
     display: inline-block;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 40px;
     color: #2d8cf0
   }

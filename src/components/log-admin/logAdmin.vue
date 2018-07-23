@@ -82,4 +82,7 @@ export default {
   .log-container .ivu-menu{
     height: 100%;
   }
+  .log-container .ivu-menu-item{
+    font-size: 12px;
+  }
 </style>

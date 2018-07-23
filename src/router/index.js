@@ -13,23 +13,24 @@ let isIndex = false
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
   util.title(to.meta.title)
-  let login = cookies.get('user_accounts')
-  if (!isIndex && login === undefined) {
-    if (to.path !== '/home' && login) {
-      isIndex = true
-      next({name: 'home'})
-    } else if (to.path === '/home' || login === undefined) {
-      isIndex = true
-      next({name: 'login'})
-    }
-  } else {
-    util.toDefaultPage(routers, to, router, next)
-  }
-  if (login === undefined && to.name !== 'login') {
-    next(false)
-  } else {
-    next()
-  }
+  next()
+  // let login = cookies.get('user_accounts')
+  // if (!isIndex && login === undefined) {
+  //   if (to.path !== '/home' && login) {
+  //     isIndex = true
+  //     next({name: 'home'})
+  //   } else if (to.path === '/home' || login === undefined) {
+  //     isIndex = true
+  //     next({name: 'login'})
+  //   }
+  // } else {
+  //   util.toDefaultPage(routers, to, router, next)
+  // }
+  // if (login === undefined && to.name !== 'login') {
+  //   next(false)
+  // } else {
+  //   next()
+  // }
 })
 router.afterEach((to) => {
   iView.LoadingBar.finish()

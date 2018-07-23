@@ -729,17 +729,18 @@ export default {
   }
   .title{
     width: 100%;
-    height: 20px;font-size: 18px;
+    height: 20px;
+    font-size: 14px;
     line-height: 20px;
     font-weight: 700;
     color: #1c2438
   }
   .mac-config label, .mac-config span{
-    font-size: 16px;
+    font-size: 14px;
   }
   .mac-config input{
     margin-left: 10px;
-    font-size: 16px;
+    font-size: 14px;
     color: #657180;
     padding: 4px 8px 4px 8px;
     border: none;
@@ -756,11 +757,11 @@ export default {
   .mac-config .traction h1{
     margin-bottom: 15px;
     text-align: center;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
   }
   .mac-config .open-ip P{
-    font-size: 16px;
+    font-size: 14px;
   }
   .mac-config .whilte-list-ip{
     margin-top: 15px;

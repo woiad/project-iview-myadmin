@@ -19,6 +19,9 @@
     <div class="table">
       <i-table :columns="columnsData" :data="temData"></i-table>
     </div>
+    <div class="page">
+      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
+    </div>
   </div>
 </template>
 
@@ -63,7 +66,10 @@ export default {
         start: '',
         end: ''
       },
-      ip: ''
+      ip: '',
+      pageNum: '',
+      pageShow: false,
+      originData: []
     }
   },
   methods: {
@@ -87,7 +93,13 @@ export default {
           if (JSON.stringify(res) !== '{}') {
             res.forEach((item, index) => {
               this.temData.push(item)
+              this.originData.push(item)
             })
+          }
+          if (res.length > 10) {
+            this.pageShow = true
+            this.pageNum = res.length
+            this.temData = this.originData.slice(0, 10)
           }
         })
         .catch(err => {
@@ -104,6 +116,9 @@ export default {
         return true
       }
       this.getData()
+    },
+    pageChange (num) {
+      this.temData = this.originData.slice((num - 1) * 10, num * 10)
     }
   },
   mounted () {
@@ -116,5 +131,9 @@ export default {
   @import 'common/query.css';
   .tem-container{
     padding: 14px 16px;
+  }
+  .page{
+    margin-top: 25px;
+    text-align: center;
   }
 </style>

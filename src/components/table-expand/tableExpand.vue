@@ -199,6 +199,12 @@ export default {
       return dataArr
     }
   },
+  watch: {
+    '$route' (to, from) {
+      clearInterval(this.inter)
+      return true
+    }
+  },
   created () {
     this.getData()
     this.inter = setInterval(() => {
@@ -235,7 +241,6 @@ export default {
     showModifierTime (params) {
       this.modifierTracTime = true
       this.modifierInd = params.index
-      console.log(this.modifierInd)
     },
     modifierCancel () {
       this.inpDataTime = ''

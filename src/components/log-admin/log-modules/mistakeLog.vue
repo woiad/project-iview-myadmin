@@ -22,6 +22,9 @@
     <div class="table">
       <i-table :columns="columnsData" :data="mistakeData"></i-table>
     </div>
+    <div class="page">
+      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
+    </div>
   </div>
 </template>
 
@@ -66,7 +69,10 @@ export default {
       },
       idcName: '',
       idcData: [],
-      mistakeData: []
+      mistakeData: [],
+      pageNum: '',
+      pageShow: false,
+      originData: []
     }
   },
   mounted () {
@@ -100,10 +106,16 @@ export default {
       this.$post('http://113.105.246.233:9100/webapi/log', {key: 'warning', content: chart})
         .then(res => {
           this.mistakeData = []
+          this.originData = []
           if (JSON.stringify(res) !== '{}') {
             res.forEach((item, index) => {
               this.mistakeData.push(item)
             })
+          }
+          if (res.length > 10) {
+            this.pageNum = res.length
+            this.pageShow = true
+            this.mistakeData = this.originData.slice(0, 10)
           }
         })
         .catch(err => {
@@ -116,6 +128,9 @@ export default {
         return true
       }
       this.getData()
+    },
+    pageChange (num) {
+      this.mistakeData = this.originData.slice((num - 1) * 10, num * 10)
     }
   }
 }
@@ -125,5 +140,9 @@ export default {
   @import 'common/query.css';
   .mis-container{
     padding: 14px 16px;
+  }
+  .page{
+    margin-top: 25px;
+    text-align: center;
   }
 </style>

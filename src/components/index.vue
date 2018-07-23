@@ -13,7 +13,7 @@
               <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
                 <Dropdown trigger="click" @on-click="handleClickUserDropdown">
                   <a href="javascript:void(0)">
-                    <span>{{username}}</span>
+                    <span style="font-size: 14px">{{user.user_name}}</span>
                     <Icon type="arrow-down-b"></Icon>
                   </a>
                   <DropdownMenu slot="list">
@@ -33,7 +33,7 @@
             <keep-alive><router-view></router-view></keep-alive>
           </div>
           <div class="footer">
-            <p>版权</p>
+            <p>锐讯网络牵引系统</p>
           </div>
         </Layout>
       </layout>
@@ -92,6 +92,7 @@ export default {
     return {
       isCollapsed: false,
       message: {},
+      user: {},
       accessList: {},
       username: cookies.get('user_accounts'),
       iconShow: false,
@@ -128,6 +129,8 @@ export default {
           .then(res => {
             console.log(res)
             this.$Message.info('退出成功')
+            window.location.href = 'http://113.105.246.230:9100'
+            // this.$router.push({name: 'login'})
           })
           .catch(err => {
             console.log(err)
@@ -190,6 +193,7 @@ export default {
   mounted () {
     this.$post('http://113.105.246.233:9100/webapi/user', {key: 'level'})
       .then((res) => {
+        this.user = res
         this.message = res.user_level
         this.$store.state.userLevel = res.user_level
       })
@@ -324,18 +328,19 @@ export default {
     bottom: 0;
     background: #f0f0f0;
     transition: left .25s linear;
+    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","\5FAE\8F6F\96C5\9ED1",Arial,sans-serif;
   }
   .footer{
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 60px;
-    background: #d1c7b7;
+    height: 40px;
+    background: #1E90FF;
   }
   .footer p{
-    font-size: 16px;
-    color: #000;
-    line-height: 60px;
+    font-size: 14px;
+    color: #fff;
+    line-height: 40px;
     text-align: center;
   }
   @media screen and (max-width: 768px) {

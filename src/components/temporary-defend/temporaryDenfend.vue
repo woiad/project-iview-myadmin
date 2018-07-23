@@ -7,7 +7,7 @@
       <i-table :columns="columnsData" :data="idcData"></i-table>
     </div>
     <div class="modal">
-      <Modal v-model="buildTemShow" @on-cancel="temCancel">
+      <Modal v-model="buildTemShow" @on-cancel="temCancel" title="新增临时防护">
         <div class="content">
           <div class="item">
             <label>防护ip</label>

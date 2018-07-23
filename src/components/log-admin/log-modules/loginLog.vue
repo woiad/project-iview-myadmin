@@ -19,6 +19,9 @@
     <div class="table">
       <i-table :columns="columnsData" :data="loginData"></i-table>
     </div>
+    <div class="page">
+      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
+    </div>
   </div>
 </template>
 
@@ -58,7 +61,10 @@ export default {
         }
       },
       ip: '',
-      loginData: []
+      loginData: [],
+      originData: [],
+      pageNum: '',
+      pageShow: false
     }
   },
   methods: {
@@ -79,12 +85,19 @@ export default {
       this.$post('http://113.105.246.233:9100/webapi/log', {key: 'loginlog', content: chart})
         .then(res => {
           this.loginData = []
+          this.originData = []
           if (JSON.stringify(res) === '{}') {
             this.loginData = []
           } else {
             res.forEach((item, index) => {
               this.loginData.push(item)
+              this.originData.push(item)
             })
+          }
+          if (res.length > 10) {
+            this.pageNum = res.length
+            this.pageShow = true
+            this.loginData = this.originData.slice(0, 10)
           }
         })
         .catch(err => {
@@ -101,6 +114,9 @@ export default {
         return true
       }
       this.getData()
+    },
+    pageChange (num) {
+      this.loginData = this.originData.slice((num - 1) * 10, num * 10)
     }
   },
   mounted () {
@@ -113,5 +129,9 @@ export default {
   @import 'common/query.css';
   .login-log-container{
     padding: 14px 16px;
+  }
+  .page{
+    margin-top: 25px;
+    text-align: center;
   }
 </style>

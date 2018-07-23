@@ -254,6 +254,8 @@ export default {
             this.$Message.info('提交成功')
             this.temShow()
             this.modalData = {}
+            this.buildCancel()
+            this.flag = false
           })
           .catch(err => {
             setTimeout(() => {
@@ -354,8 +356,8 @@ export default {
   }
   .tem-con label{
     display: inline-block;
-    margin: 10px 0;
-    font-size: 14px;
+    margin: 10px 0 8px;
+    font-size: 12px;
     line-height: 20px;
   }
   .tem-access-tem{
@@ -371,7 +373,7 @@ export default {
   }
   .tem-access-tem .access-text{
     display: inline-block;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 40px;
     color: #2d8cf0
   }

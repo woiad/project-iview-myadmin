@@ -16,6 +16,10 @@
               <span class="tip">用户部门: </span>
               <span class="personal department">{{personalMess.user_department}}</span>
             </div>
+            <div class="personalUsername">
+              <span class="tip">用户名称: </span>
+              <span class="personal department">{{personalMess.user_name}}</span>
+            </div>
           </div>
         </Card>
       </Col>
@@ -33,10 +37,14 @@ export default {
     }
   },
   mounted () {
-    axios.get('http://113.105.246.233:9005/server/index.php?g=Web&c=Mock&o=simple&projectID=2&uri=/api/webapi/user').then((response) => {
-      this.personalMess = response.data[0]
-      console.log(this.personalMess)
-    })
+    this.$post('http://113.105.246.233:9100/webapi/user', {key: 'level'})
+      .then(res => {
+        this.personalMess = res
+        console.log(this.personalMess)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
 }
@@ -46,7 +54,7 @@ export default {
   .personalContainer{
     margin: 10px 0 0 10px;
   }
-  .personalAccount{
+  .personalAccount, .personalDepartment{
     margin-bottom: 24px;
   }
   .tip{

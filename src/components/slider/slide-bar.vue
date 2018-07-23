@@ -4,7 +4,7 @@
         <Tooltip placement="right-start" :content="key">
           <span class="icon" :class='key' v-if="iconShow"></span>
         </Tooltip>
-        <span v-if="textShow">{{key}}</span>
+        <span v-if="textShow" class="text">{{key}}</span>
       </MenuItem>
     </Menu>
 </template>
@@ -47,6 +47,9 @@ export default {
       ]
     },
     changeActive () {
+      if (this.$route.name === 'home_index') {
+        return ''
+      }
       if (this.$store.state.active === '') {
         return localStorage.getItem(name)
       }
@@ -115,6 +118,9 @@ export default {
   .ivu-tooltip-popper .ivu-tooltip-arrow{
     border: none;
     background: #000;
+  }
+  .text{
+    font-size: 13px;
   }
   .用户管理{
     background-image: url(../../assets/user.png);

@@ -83,14 +83,13 @@ export default {
   mounted () {
     let level = {}
     level = this.$store.state.userLevel
-    if (level !== undefined) {
+    if (level !== undefined && JSON.stringify(level) !== '{}') {
       for (let i in level) {
         if (i === this.$route.name) {
           this.levelMess = level[i]
         }
       }
     }
-    console.log(this.levelMess)
     this.getData()
   },
   computed: {

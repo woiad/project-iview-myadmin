@@ -19,6 +19,9 @@
     <div class="table">
       <i-table :columns="columnsData" :data="tracData"></i-table>
     </div>
+    <div class="page">
+      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
+    </div>
   </div>
 </template>
 
@@ -43,7 +46,10 @@ export default {
       ip: '',
       tracData: [],
       flowShow: false,
-      setFlowShow: false
+      setFlowShow: false,
+      pageNum: '',
+      pageShow: false,
+      originData: []
     }
   },
   computed: {
@@ -156,6 +162,7 @@ export default {
       this.$post('http://113.105.246.233:9100/webapi/log', {key: 'towlog', content: chart})
         .then(res => {
           this.tracData = []
+          this.originData = []
           if (JSON.stringify(res) !== '{}') {
             res.forEach((item, index) => {
               if (JSON.stringify(item.all_value) !== '{}' || item.all_value !== undefined) {
@@ -168,7 +175,13 @@ export default {
                 }
               }
               this.tracData.push(item)
+              this.originData.push(item)
             })
+          }
+          if (res.length > 10) {
+            this.pageShow = true
+            this.pageNum = res.length
+            this.tracData = this.originData.slice(0, 10)
           }
         })
         .catch(err => {
@@ -189,6 +202,9 @@ export default {
     showALL () {
       this.flowShow = true
       this.setFlowShow = true
+    },
+    pageChange (num) {
+      this.tracData = this.originData.slice((num - 1) * 10, num * 10)
     }
   }
 }
@@ -198,5 +214,9 @@ export default {
   @import "common/query.css";
   .trac-container{
     padding: 14px 16px;
+  }
+  .page{
+    margin-top: 25px;
+    text-align: center;
   }
 </style>

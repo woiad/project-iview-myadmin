@@ -12,7 +12,7 @@
             <Col span="12" style="padding-left:6px">
               <Row class-name="made-child-con-middle" type="flex" align="middle">
                 <div>
-                  <b class="card-user-infor-name">{{userName}}</b>
+                  <b class="card-user-infor-name">{{user.user_name}}</b>
                   <p>super admin</p>
                 </div>
               </Row>
@@ -39,8 +39,18 @@ export default {
   name: 'home',
   data () {
     return {
-      userName: cookies.get('user_accounts')
+      userName: cookies.get('user_accounts'),
+      user: {}
     }
+  },
+  mounted () {
+    this.$post('http://113.105.246.233:9100/webapi/user', {key: 'level'})
+      .then(res => {
+        this.user = res
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 }
 </script>

@@ -253,3 +253,8 @@ export default {
     }
   }
 </style>
+<style>
+  .ivu-tag-text{
+    font-size: 12px;
+  }
+</style>
