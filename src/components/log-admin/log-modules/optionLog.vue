@@ -3,10 +3,16 @@
     <div class="query">
       <div class="query-time">
         <div class="start-time time">
-          <DatePicker type="date" placeholder="请选择开始时间" style="width: 200px" v-model="time.start"></DatePicker>
+          <DatePicker type="date" placeholder="请选择开始日期" style="width: 130px" v-model="date.start"></DatePicker>
+        </div>
+        <div class="time">
+          <TimePicker type="time" placeholder="请选择开始时间" style="width: 130px" v-model="time.start"></TimePicker>
         </div>
         <div class="end-time time">
-          <DatePicker type="date" placeholder="请选择结束时间" style="width: 200px" v-model="time.end" :options="endOptions"></DatePicker>
+          <DatePicker type="date" placeholder="请选择结束日期" style="width: 130px" v-model="date.end" :options="endOptions"></DatePicker>
+        </div>
+        <div class="time">
+          <TimePicker type="time" placeholder="请选择结束时间" style="width: 130px" v-model="time.end"></TimePicker>
         </div>
       </div>
       <div class="query-ip">
@@ -33,8 +39,8 @@ export default {
     return {
       endOptions: {
         disabledDate: (data) => {
-          if (this.time.start !== null) {
-            return data && data.valueOf() < this.time.start.valueOf() + 86400000
+          if (this.date.start !== null) {
+            return data && data.valueOf() < this.date.start.valueOf()
           }
         }
       },
@@ -69,23 +75,16 @@ export default {
       ip: '',
       pageNum: '',
       pageShow: false,
-      originData: []
+      originData: [],
+      date: {
+        start: '',
+        end: ''
+      }
     }
   },
   methods: {
     getData () {
-      let obj = {}
-      if (this.time.start !== '' && this.time.end !== '') {
-        obj.time_start = util.timeTransform(this.time.start)
-        obj.time_end = util.timeTransform(this.time.end)
-      }
-      if (this.time.start === '' && this.time.end === '' && this.ip !== '') {
-        obj.time_start = util.timeTransform(new Date())
-        obj.time_end = util.addDat(obj.time_start, 1)
-      }
-      if (this.ip !== '') {
-        obj.ip = this.ip
-      }
+      let obj = util.dateProces(this.date.start, this.date.end, this.time.start, this.time.end, this.ip)
       let chart = JSON.stringify(obj)
       this.$post('http://113.105.246.233:9100/webapi/log', {key: 'operlog', content: chart})
         .then(res => {
@@ -101,6 +100,8 @@ export default {
             this.pageNum = res.length
             this.pageShow = true
             this.optionData = this.originData.slice(0, 10)
+          } else if (res.length < 10) {
+            this.pageShow = false
           }
         })
         .catch(err => {
@@ -108,8 +109,8 @@ export default {
         })
     },
     ipQuery () {
-      if (this.ip === '' && this.time.start === '' && this.time.end === '') {
-        alert('请输入查询条件!')
+      if (this.ip === '' && this.date.start === '' && this.date.end === '') {
+        alert('请输入查询日期!')
         return true
       }
       if (!util.regIp(this.ip) && this.ip !== '') {

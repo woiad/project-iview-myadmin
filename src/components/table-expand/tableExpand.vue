@@ -117,7 +117,7 @@ export default {
               props: {
                 type: 'primary',
                 size: 'small',
-                disabled: this.level['修改牵引时间'] !== 'true'
+                disabled: !this.level['修改牵引时间']
               },
               style: {
                 marginRight: '5px'
@@ -132,7 +132,7 @@ export default {
               props: {
                 type: 'error',
                 size: 'small',
-                disabled: this.level['手动解封'] !== 'true'
+                disabled: !this.level['手动解封']
               },
               style: {
                 marginRight: '5px'
@@ -146,7 +146,7 @@ export default {
             h('Button', {
               props: {
                 size: 'small',
-                disabled: this.checkAll
+                disabled: !this.level['查看全部']
               },
               on: {
                 click: () => {
@@ -227,9 +227,6 @@ export default {
           this.row.data[i].tow_value = util.evil(this.row.data[i].tow_value)
         }
       }
-    }
-    if (this.level['查看全部'] === 'true') {
-      this.checkAll = false
     }
   },
   methods: {
@@ -363,6 +360,6 @@ export default {
 
 <style>
   .table td.ivu-table-expanded-cell{
-    padding: 20px 10px;
+    padding: 20px 20px;
   }
 </style>

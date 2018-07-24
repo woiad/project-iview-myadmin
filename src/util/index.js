@@ -39,10 +39,10 @@ util.chartToBol = function (item) { // 把字符 'true' 或 'false' 转换成布
   }
   return item
 }
-util.changeCurrentValue = function (changeData, ref) { // 把当前选中的权限替换掉之前的权限
+util.changeCurrentValue = function (changeData, ref, name) { // 把当前选中的权限替换掉之前的权限
   Object.keys(changeData).forEach((item, index) => {
     for (let i in changeData[item]) {
-      let ind = i + index
+      let ind = name + i + index
       changeData[item][i] = ref[ind][0].currentValue
     }
   })
@@ -72,6 +72,12 @@ util.timeTransform = function (date) {
   let year = date.getFullYear()
   let month = util.addZero(date.getMonth() + 1)
   let data = util.addZero(date.getDate())
+  return year + '-' + month + '-' + data
+}
+util.time = function (date) {
+  let year = date.getFullYear()
+  let month = util.addZero(date.getMonth() + 1)
+  let data = util.addZero(date.getDate())
   let hour = util.addZero(date.getHours())
   let miunte = util.addZero(date.getMinutes())
   let second = util.addZero(date.getSeconds())
@@ -84,9 +90,41 @@ util.addZero = function (time) {
     return time
   }
 }
-util.addDat = function (date, days) {
+util.addDat = function (date, days, flag) {
   let dat = new Date(date)
   dat.setDate(dat.getDate() + days)
-  console.log(dat)
-  return util.timeTransform(dat)
+  if (flag) {
+    return util.timeTransform(dat)
+  }
+  return util.time(dat)
+}
+util.dateProces = function (dateStart, dateEnd, timeStart, timeEnd, ip) {
+  let obj = {}
+  let allDate = {}
+  if (dateStart === '' && timeEnd === '' && ip !== '') {
+    allDate.time_start = util.time(new Date())
+    allDate.time_end = util.addDat(allDate.time_start, 1)
+    allDate.ip = ip
+    return allDate
+  }
+  if (dateStart !== '' && dateEnd !== '') {
+    obj.date_start = util.timeTransform(dateStart)
+    obj.date_end = util.timeTransform(dateEnd)
+  }
+  if (dateStart === '' && dateEnd === '') {
+    allDate.time_start = util.timeTransform(new Date()) + ' ' + '00:00:00'
+    allDate.time_end = util.addDat(allDate.time_start, 1, true) + ' ' + '23:59:59'
+    return allDate
+  }
+  if (timeStart === '') {
+    allDate.time_start = obj.date_start + ' ' + '00:00:00'
+  } else {
+    allDate.time_start = obj.date_start + ' ' + timeStart
+  }
+  if (timeEnd === '') {
+    allDate.time_end = obj.date_end + ' ' + '23:59:59'
+  } else {
+    allDate.time_end = obj.date_end + ' ' + timeEnd
+  }
+  return allDate
 }

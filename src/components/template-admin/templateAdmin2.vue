@@ -1,7 +1,7 @@
 <template>
   <div class="tem-container">
     <div class="build-tem">
-      <Button type="primary" icon="ios-plus-empty" @click="bulidTemplate" :disabled="levelMess['新建'] !== 'true'">添加模板</Button>
+      <Button type="primary" icon="ios-plus-empty" @click="bulidTemplate" :disabled="!levelMess['新建']">添加模板</Button>
     </div>
     <div class="table">
       <i-table :columns="columnsData" :data="temData"></i-table>
@@ -27,7 +27,7 @@
                       <span>{{val}}</span>
                       <div slot="content" v-for="(list, name) in items" :key="name" class="access-list">
                         <p class="access-text">{{name}}</p>
-                        <Checkbox  class="checkbox" :ref="name + index" :value="list"></Checkbox>
+                        <Checkbox  class="checkbox" :ref=" 'build' + name + index" :value="list"></Checkbox>
                       </div>
                     </Panel>
                   </Collapse>
@@ -61,7 +61,7 @@
                         <span>{{val}}</span>
                         <div slot="content" v-for="(list, name) in items" :key="name" class="access-list">
                           <p class="access-text">{{name}}</p>
-                          <Checkbox  class="checkbox" :ref="name + index" :value="list"></Checkbox>
+                          <Checkbox  class="checkbox" :ref=" 'modifi' + name + index" :value="list"></Checkbox>
                         </div>
                       </Panel>
                     </Collapse>
@@ -113,7 +113,7 @@ export default {
                 props: {
                   type: 'primary',
                   size: 'small',
-                  disabled: this.levelMess['修改'] !== 'true'
+                  disabled: !this.levelMess['修改']
                 },
                 style: {
                   marginRight: '5px'
@@ -128,7 +128,7 @@ export default {
                 props: {
                   type: 'error',
                   size: 'small',
-                  disabled: this.levelMess['删除'] !== 'true'
+                  disabled: !this.levelMess['删除']
                 },
                 on: {
                   click: () => {
@@ -192,12 +192,12 @@ export default {
       if (typeof modifierData.tem_level === 'string') {
         modifierData.tem_level = util.evil(modifierData.tem_level)
       }
-      util.chartToBol(modifierData.tem_level)
+      // util.chartToBol(modifierData.tem_level)
       this.modifierData = modifierData
     },
     // 提交修改后的权限模板信息
     modifierSubmit () {
-      let submitData = this.submitTemData(this.modifierData, this.temName, this.temRemarks)
+      let submitData = this.submitTemData(this.modifierData, this.temName, this.temRemarks, 'modifi')
       let subBol = this.changeTemText(this.modifierData, submitData)
       let submitDataChart = JSON.stringify(submitData)
       this.initModal()
@@ -244,7 +244,7 @@ export default {
     },
     // 提交新建模板
     submitBuildTemData () {
-      let submitData = this.submitTemData(this.modalData, this.temName, this.temRemarks)
+      let submitData = this.submitTemData(this.modalData, this.temName, this.temRemarks, 'build')
       let buiBol = this.changeTemText(this.modalData, submitData)
       this.modalData = {}
       let chart = JSON.stringify(submitData)
@@ -268,7 +268,7 @@ export default {
       }
     },
     // 模板信息处理
-    submitTemData (submitData, name, remarks) {
+    submitTemData (submitData, name, remarks, refName) {
       let jsonReplace = JSON.stringify(submitData).replace(/tem_level/g, 'level')
       let submitObj = util.evil(jsonReplace)
       if (name === '') {
@@ -279,7 +279,7 @@ export default {
       }
       submitObj.tem_name = name
       submitObj.tem_remarks = remarks
-      util.changeCurrentValue(submitObj.level, this.$refs)
+      util.changeCurrentValue(submitObj.level, this.$refs, refName)
       return submitObj
     },
     // 新建模板关闭
@@ -298,7 +298,7 @@ export default {
       this.$post('http://113.105.246.233:9100/webapi/template', {key: 'del', id: delData.id})
         .then(res => {
           this.$Message.info('删除成功')
-          this.temData.splice(this.delInd, 1)
+          this.temShow()
           this.delConfirm = false
         })
         .catch(err => {
@@ -340,7 +340,8 @@ export default {
         changeFlag = true
         return changeFlag
       }
-      util.changeValue(unChangeData.tem_level, changeData.level)
+      changeFlag = util.changeValue(unChangeData.tem_level, changeData.level)
+      return changeFlag
     }
   }
 }

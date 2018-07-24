@@ -5,7 +5,7 @@
         <div class="nav">
           <Sider hide-trigger>
             <Menu theme="light" width="auto" :active-name="changeActive" ref="menu" @on-select="handelChange">
-              <MenuItem v-for="(item, index) in levelMess" :key="index" :name="index" v-if="item === 'true'" :class="{active: changeActive === index}">
+              <MenuItem v-for="(item, index) in levelMess" :key="index" :name="index" v-if="item" :class="{active: changeActive === index}">
                 <span>{{index}}</span>
               </MenuItem>
             </Menu>
@@ -26,8 +26,7 @@ export default {
   name: 'logAdmin',
   data () {
     return {
-      levelMess: {},
-      active: '登陆历史'
+      levelMess: {}
     }
   },
   mounted () {

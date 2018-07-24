@@ -1,6 +1,6 @@
 <template>
     <Menu hide-trigger :active-name="changeActive" theme="dark" width="auto" :class="menuitemClasses" @on-select="handelChange">
-      <MenuItem :name="key" v-for="(value, key) in accessList" :key="key" :class="[value['status'], {show: changeActive === key}, {iconShow: isCollapsed}]">
+      <MenuItem :name="key" v-for="(value, key) in accessList" v-if="value['status']" :key="key" :class="[, {show: changeActive === key}, {iconShow: isCollapsed}]">
         <Tooltip placement="right-start" :content="key">
           <span class="icon" :class='key' v-if="iconShow"></span>
         </Tooltip>

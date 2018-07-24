@@ -58,7 +58,7 @@ export default {
               props: {
                 type: 'error',
                 size: 'small',
-                disabled: this.level['删除'] !== 'true'
+                disabled: !this.level['删除']
               },
               on: {
                 click: () => {
@@ -69,108 +69,11 @@ export default {
           }
         }
       ],
-      // originData: [
-      //   {
-      //     id: 1,
-      //     idc_id: 1,
-      //     idc_name: '德胜机房',
-      //     ip: '113.105.246.236',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 2,
-      //     idc_id: 1,
-      //     idc_name: '德胜机房',
-      //     ip: '113.105.246.235',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 3,
-      //     idc_id: 2,
-      //     idc_name: '香港机房',
-      //     ip: '113.105.246.23',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 4,
-      //     idc_id: 2,
-      //     idc_name: '香港机房',
-      //     ip: '113.105.246.22',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 5,
-      //     idc_id: 3,
-      //     idc_name: '北京机房',
-      //     ip: '113.105.246.20',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 6,
-      //     idc_id: 2,
-      //     idc_name: '北京机房',
-      //     ip: '113.105.246.21',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 7,
-      //     idc_id: 3,
-      //     idc_name: '深圳机房',
-      //     ip: '113.105.246.10',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 8,
-      //     idc_id: 3,
-      //     idc_name: '深圳机房',
-      //     ip: '113.105.246.11',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 9,
-      //     idc_id: 4,
-      //     idc_name: '广州机房',
-      //     ip: '113.105.246.23',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 9,
-      //     idc_id: 4,
-      //     idc_name: '广州机房',
-      //     ip: '113.105.246.22',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 10,
-      //     idc_id: 5,
-      //     idc_name: '新疆机房',
-      //     ip: '113.105.246.01',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   },
-      //   {
-      //     id: 11,
-      //     idc_id: 5,
-      //     idc_name: '新疆机房',
-      //     ip: '113.105.246.02',
-      //     remarks: '测试',
-      //     user_name: 'test'
-      //   }
-      // ],
       ipData: [],
       confirmShow: false,
       confirmInd: '',
-      loadingShow: false
+      loadingShow: false,
+      inter: ''
     }
   },
   props: {
@@ -182,24 +85,30 @@ export default {
     },
     level: {
       type: Object
+    },
+    originData: {
+      type: Array
     }
   },
   created () {
     this.getData()
-    // this.ipData = []
-    // console.log(this.originData)
-    // this.originData.forEach((item, index) => {
-    //   console.log(item.idc_name)
-    //   if (item.idc_name === this.name) {
-    //     this.ipData.push(item)
-    //   }
-    // })
+    this.inter = setInterval(() => {
+      this.getData()
+    }, 3000)
+  },
+  watch: {
+    '$route' (to, from) {
+      clearInterval(this.inter)
+      return true
+    }
+  },
+  beforeDestroy () {
+    clearInterval(this.inter)
   },
   methods: {
     getData () {
       this.$post('http://113.105.246.233:9100/webapi/manualtow', {key: 'show'})
         .then(res => {
-          console.log(res)
           this.ipData = []
           res.forEach((item, index) => {
             if (item.idc_name === this.name) {
@@ -220,7 +129,8 @@ export default {
       this.confirmInd = params.index
     },
     confirmDec () {
-      let id = this.ipData[this.confirmInd].id
+      let data = this.ipData
+      let id = data[this.confirmInd].id
       this.$post('http://113.105.246.233:9100/webapi/manualtow', {key: 'del', id: id})
         .then(res => {
           this.$Message.info('解封成功')

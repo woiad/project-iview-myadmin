@@ -1,7 +1,7 @@
 <template>
   <div class="maunal-container">
     <div class="manual-build">
-      <Button type="primary" icon="ios-plus-empty" @click="buildClick" :disabled="levelMess['新建'] !== 'true'">新建封停ip</Button>
+      <Button type="primary" icon="ios-plus-empty" @click="buildClick" :disabled="!levelMess['新建']">新建封停ip</Button>
     </div>
     <div class="table">
       <i-table :columns="columnsData" :data="idcData" @on-expand="expand"></i-table>
@@ -51,8 +51,10 @@ export default {
               props: {
                 row: params.row,
                 name: this.idc_name,
-                level: this.levelMess
-              }
+                level: this.levelMess,
+                originData: this.addData
+              },
+              ref: 'chil'
             })
           }
         },
@@ -70,7 +72,8 @@ export default {
       },
       buildInd: '',
       levelMess: {},
-      choseIdc: ''
+      choseIdc: '',
+      addData: []
     }
   },
   mounted () {
@@ -84,6 +87,7 @@ export default {
       }
     }
     this.getData()
+    this.getIpData()
   },
   methods: {
     getData () {
@@ -91,6 +95,18 @@ export default {
         .then(res => {
           res.forEach((item, index) => {
             this.idcData.push(item)
+          })
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    getIpData () {
+      this.$post('http://113.105.246.233:9100/webapi/manualtow', {key: 'show'})
+        .then(res => {
+          this.addData = []
+          res.forEach((item, index) => {
+            this.addData.push(item)
           })
         })
         .catch(err => {
@@ -128,6 +144,7 @@ export default {
           this.$Message.info('添加成功')
           this.buildIpShow = false
           this.buildIpCancel()
+          this.getIpData()
         })
         .catch(err => {
           this.$Message.info('添加失败' + err)

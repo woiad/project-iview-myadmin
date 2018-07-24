@@ -3,10 +3,16 @@
     <div class="query">
       <div class="query-time">
         <div class="start-time time">
-          <DatePicker type="date" placeholder="请选择开始时间" style="width: 200px" v-model="time.start"></DatePicker>
+          <DatePicker type="date" placeholder="请选择开始日期" style="width: 130px" v-model="date.start"></DatePicker>
+        </div>
+        <div class="time">
+          <TimePicker type="time" placeholder="请选择开始时间" style="width: 130px" v-model="time.start"></TimePicker>
         </div>
         <div class="end-time time">
-          <DatePicker type="date" placeholder="请选择结束时间" style="width: 200px" v-model="time.end" :options="endOptions"></DatePicker>
+          <DatePicker type="date" placeholder="请选择结束日期" style="width: 130px" v-model="date.end" :options="endOptions"></DatePicker>
+        </div>
+        <div class="time">
+          <TimePicker type="time" placeholder="请选择结束时间" style="width: 130px" v-model="time.end"></TimePicker>
         </div>
       </div>
       <div class="query-ip">
@@ -33,8 +39,8 @@ export default {
     return {
       endOptions: {
         disabledDate: (data) => {
-          if (this.time.start !== null) {
-            return data && data.valueOf() < this.time.start.valueOf() + 86400000
+          if (this.date.start !== null) {
+            return data && data.valueOf() < this.date.start.valueOf()
           }
         }
       },
@@ -49,7 +55,11 @@ export default {
       setFlowShow: false,
       pageNum: '',
       pageShow: false,
-      originData: []
+      originData: [],
+      date: {
+        start: '',
+        end: ''
+      }
     }
   },
   computed: {
@@ -115,7 +125,7 @@ export default {
             props: {
               type: 'error',
               size: 'small',
-              disabled: this.levelMess['查看全部'] !== 'true'
+              disabled: !this.levelMess['查看全部']
             },
             on: {
               click: () => {
@@ -146,15 +156,7 @@ export default {
   },
   methods: {
     getData () {
-      let obj = {}
-      if (this.time.start !== '' && this.time.end !== '') {
-        obj.time_start = util.timeTransform(this.time.start)
-        obj.time_end = util.timeTransform(this.time.end)
-      }
-      if (this.time.start === '' && this.time.end === '' && this.ip !== '') {
-        obj.time_start = util.timeTransform(new Date())
-        obj.time_end = util.addDat(obj.time_start, 1)
-      }
+      let obj = util.dateProces(this.date.start, this.date.end, this.time.start, this.time.end, this.ip)
       if (this.ip !== '') {
         obj.ip = this.ip
       }
@@ -182,6 +184,8 @@ export default {
             this.pageShow = true
             this.pageNum = res.length
             this.tracData = this.originData.slice(0, 10)
+          } else if (res.length < 10) {
+            this.pageShow = false
           }
         })
         .catch(err => {
@@ -189,8 +193,8 @@ export default {
         })
     },
     ipQuery () {
-      if (this.ip === '' && this.time.start === '' && this.time.end === '') {
-        alert('请输入查询条件!')
+      if (this.ip === '' && this.date.start === '' && this.date.end === '') {
+        alert('请输入查询!')
         return true
       }
       if (!util.regIp(this.ip) && this.ip !== '') {

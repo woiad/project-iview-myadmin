@@ -59,8 +59,8 @@ export default {
 
 <style scoped>
   .admin-list .dropwdown-item .item{
-    padding: 15px 0px 5px;
-    font-size: 14px;
+    padding: 15px 0px 5px 5px;
+    font-size: 12px;
     color: #495060;
     border-bottom: 1px solid #E4E7ED;
   }
@@ -94,5 +94,10 @@ export default {
   }
   .white-list p{
     margin-top: 10px;
+  }
+</style>
+<style>
+  .table td.ivu-table-expanded-cell{
+    padding: 20px 20px;
   }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="tem-container">
     <div class="tem-add">
-      <Button type="primary" icon="ios-plus-empty" @click="addTem" :disabled="levelMess['新建'] !== 'true'">添加防护</Button>
+      <Button type="primary" icon="ios-plus-empty" @click="addTem" :disabled="!levelMess['新建']">添加防护</Button>
     </div>
     <div class="table">
       <i-table :columns="columnsData" :data="idcData"></i-table>
@@ -94,7 +94,7 @@ export default {
               props: {
                 type: 'error',
                 size: 'small',
-                disabled: this.levelMess['删除'] !== 'true'
+                disabled: !this.levelMess['删除']
               },
               on: {
                 click: () => {
@@ -124,7 +124,6 @@ export default {
       this.idcData = []
       this.$post('http://113.105.246.233:9100/webapi/temfwip', {key: 'show'})
         .then(res => {
-          console.log(res)
           if (res instanceof Array) {
             res.forEach((item, index) => {
               this.idcData.push(item)

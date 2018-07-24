@@ -1,61 +1,8 @@
 <template>
   <div class="admin-container">
     <div class="admin-add">
-      <Button type="primary" icon="ios-plus-empty" @click="addRoom">添加机房</Button>
+      <Button type="primary" icon="ios-plus-empty" @click="addRoom" :disabled="!levelMess['新建']">添加机房</Button>
     </div>
-    <!--<div class="admin-list">-->
-      <!--<ul>-->
-          <!--<li v-for="(item, index) in adminData" :key="index" class="item-list">-->
-            <!--<div class="dropdown">-->
-              <!--<div class="dropdown-header">-->
-                <!--<a href="javascript:void(0)" class="name" @click="dropdownShow(index)">-->
-                  <!--<span>{{item.idc_name}}</span>-->
-                  <!--<span>{{item.idc_Remarks}}</span>-->
-                  <!--<Icon type="arrow-down-b" class="name-icon"></Icon>-->
-                <!--</a>-->
-                <!--<span class="del-btn" @click="delteMacRoom(index)"><Icon type="ios-trash-outline"></Icon>删除</span>-->
-                <!--<span class="modifier-btn" @click="modifier(index)"><Icon type="ios-compose-outline"></Icon>修改</span>-->
-              <!--</div>-->
-              <!--<div slot="list" class="dropwdown-item" ref="dropdownItem">-->
-                  <!--<div class="item defend">-->
-                    <!--<span>全墙防护总流量：{{item.idc_config.idc_flow_total }} (mb/s)</span>-->
-                  <!--</div>-->
-                  <!--<div class="item ip-flow">-->
-                    <!--<span>默认IP流量：{{item.idc_config.idc_overtop_flow }} (mb/s)</span>-->
-                  <!--</div>-->
-                  <!--<div class="item ip-time">-->
-                    <!--<span>默认IP牵引时间：{{item.idc_config.idc_tow_default_time }} (分钟)</span>-->
-                  <!--</div>-->
-                  <!--<div class="item pull-time">-->
-                    <!--<div class="pull">-->
-                      <!--<p>自动延长牵引时间策略</p>-->
-                      <!--<div class="pull-item">-->
-                        <!--<span>生效时间：{{item.idc_config.idc_set_tow_time }} (分钟) </span>-->
-                        <!--<span>超出次数1：{{item.idc_config.idc_one_tow_cum}} (次)</span>-->
-                        <!--<span>封停时间1: {{item.idc_config.idc_one_tow_time}} (分钟)</span>-->
-                        <!--<span>超出次数2：{{item.idc_config.idc_two_tow_cum}} (次)</span>-->
-                        <!--<span>封停时间2: {{item.idc_config.idc_two_tow_time}} (分钟)</span>-->
-                      <!--</div>-->
-                    <!--</div>-->
-                  <!--</div>-->
-                  <!--<div class="item white-list">-->
-                    <!--<p>客户端白名单ip:</p>-->
-                    <!--<p v-for="(val, index) in item.idc_towopenip" :key="index">-->
-                      <!--<span>{{index}}</span>-->
-                      <!--<span>备注：{{val}}</span>-->
-                    <!--</p>-->
-                  <!--</div>-->
-                  <!--<div class="item ip-derss">-->
-                    <!--<span>客户端ip地址：{{item.idc_towip}}</span>-->
-                  <!--</div>-->
-                  <!--<div class="item firewall-num">-->
-                    <!--<span>防火墙台数：{{item.idc_config.idc_fw_num}} (台)</span>-->
-                  <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-          <!--</li>-->
-      <!--</ul>-->
-    <!--</div>-->
     <div class="table">
       <i-table :columns="columns3" :data="adminData"></i-table>
     </div>
@@ -304,7 +251,7 @@ export default {
                 props: {
                   type: 'primary',
                   size: 'small',
-                  disabled: this.levelMess['修改'] !== 'true'
+                  disabled: !this.levelMess['修改']
                 },
                 style: {
                   marginRight: '5px'
@@ -319,7 +266,7 @@ export default {
                 props: {
                   type: 'error',
                   size: 'small',
-                  disabled: this.levelMess['删除'] !== 'true'
+                  disabled: !this.levelMess['删除']
                 },
                 on: {
                   click: () => {

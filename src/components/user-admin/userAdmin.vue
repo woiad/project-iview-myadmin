@@ -1,7 +1,7 @@
 <template>
   <div class="user-container">
     <div class="user-add">
-      <Button type="primary" icon="ios-plus-empty" @click="addUser" :disabled="levelMess['新建'] !== 'true'">新增用户</Button>
+      <Button type="primary" icon="ios-plus-empty" @click="addUser" :disabled="!levelMess['新建']">新增用户</Button>
     </div>
     <div class="user-list">
       <i-table :columns="columnsData" :data="userData"></i-table>
@@ -41,7 +41,7 @@
                       <span>{{val}}</span>
                       <div slot="content" v-for="(list, name) in items" :key="name" class="access-list">
                         <p class="access-text">{{name}}</p>
-                        <Checkbox  class="checkbox" :ref="name + index" :value="list"></Checkbox>
+                        <Checkbox  class="checkbox" :ref=" 'bulid' + name + index" :value="list"></Checkbox>
                       </div>
                     </Panel>
                   </Collapse>
@@ -85,7 +85,7 @@
                       <span>{{val}}</span>
                       <div slot="content" v-for="(list, name) in items" :key="name" class="access-list">
                         <p class="access-text">{{name}}</p>
-                        <Checkbox  class="checkbox" :ref="name + index" :value="list"></Checkbox>
+                        <Checkbox  class="checkbox" :ref=" 'modifi' + name + index" :value="list"></Checkbox>
                       </div>
                     </Panel>
                   </Collapse>
@@ -170,7 +170,7 @@ export default {
                 props: {
                   type: 'primary',
                   size: 'small',
-                  disabled: this.levelMess['修改'] !== 'true'
+                  disabled: !this.levelMess['修改']
                 },
                 style: {
                   marginRight: '5px'
@@ -184,7 +184,8 @@ export default {
               h('Button', {
                 props: {
                   type: 'info',
-                  size: 'small'
+                  size: 'small',
+                  disabled: !this.levelMess['修改']
                 },
                 style: {
                   marginRight: '5px'
@@ -199,7 +200,7 @@ export default {
                 props: {
                   type: 'error',
                   size: 'small',
-                  disabled: this.levelMess['删除'] !== 'true'
+                  disabled: !this.levelMess['删除']
                 },
                 on: {
                   click: () => {
@@ -295,7 +296,7 @@ export default {
         }
       })
       this.accessListData.tem_level = util.evil(this.accessListData.tem_level)
-      util.chartToBol(this.accessListData.tem_level)
+      // util.chartToBol(this.accessListData.tem_level)
       this.accessListShow = true
     },
     clearUserAddData () { // 重置用户新增 modal
@@ -346,7 +347,7 @@ export default {
       submitObj.user_remarks = remarks
       submitObj.user_passwd = md5(password)
       submitObj.user_level = {}
-      util.changeCurrentValue(submitData.tem_level, this.$refs)
+      util.changeCurrentValue(submitData.tem_level, this.$refs, 'bulid')
       submitObj.user_level = submitData.tem_level
       return submitObj
     },
@@ -357,7 +358,7 @@ export default {
       if (typeof this.userModifierData.user_level === 'string') {
         this.userModifierData.user_level = util.evil(this.userModifierData.user_level)
       }
-      util.chartToBol(this.userModifierData.user_level)
+      // util.chartToBol(this.userModifierData.user_level)
     },
     userModifier () { // 提交修改后的数据
       let modifierChart = JSON.stringify(this.userModifierData) // 此处要把用户修改的初始数据转换后赋值给新变量，
@@ -384,6 +385,7 @@ export default {
       this.clearUserModifierData()
     },
     userModifierDataOpt (optionData) { // 修改后的数据的收集
+      console.log(this.$refs)
       if (this.userModifierInpData.userModifierName !== '') {
         optionData.user_name = this.userModifierInpData.userModifierName
       }
@@ -393,7 +395,7 @@ export default {
       if (this.userModifierInpData.userModifierRemarks !== '') {
         optionData.user_remarks = this.userModifierInpData.userModifierRemarks
       }
-      util.changeCurrentValue(optionData.user_level, this.$refs)
+      util.changeCurrentValue(optionData.user_level, this.$refs, 'modifi')
       return optionData
     },
     userModifierCancel () { // 重置修改权限 modal 数据
@@ -475,20 +477,6 @@ export default {
         .then(res => {
           this.userData = []
           for (let i = 0; i < res.length; i++) {
-            // let obj = {
-            //   id: '',
-            //   user_name: '',
-            //   user_department: '',
-            //   user_times: '',
-            //   user_remarks: '',
-            //   user_level: ''
-            // }
-            // obj.user_name = res[i].user_name
-            // obj.user_department = res[i].user_department
-            // obj.user_times = res[i].user_times
-            // obj.user_remarks = res[i].user_remarks
-            // obj.user_level = res[i].user_level
-            // obj.id = res[i].id
             this.userData.push(res[i])
           }
           this.userOriginData = res
