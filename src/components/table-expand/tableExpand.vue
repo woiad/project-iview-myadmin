@@ -250,13 +250,12 @@ export default {
       let id = ''
       let ip = ''
       this.originData.forEach((item, index) => {
-        debugger
         if (item.idc_name === this.row.idc_name) {
           id = item.data[this.modifierInd].tow_value.idc_id
           ip = item.data[this.modifierInd].tow_key
         }
       })
-      this.$post('http://113.105.246.233:9100/webapi/realtimetow', {key: 'updatetowtime', time: this.inpDataTime, ip: ip, idc_id: id})
+      this.$post('/webapi/realtimetow', {key: 'updatetowtime', time: this.inpDataTime, ip: ip, idc_id: id})
         .then(res => {
           this.$Message.info('修改成功')
           this.modifierCancel()
@@ -280,7 +279,7 @@ export default {
           ip = item.data[this.reliveInd].tow_key
         }
       })
-      this.$post('http://113.105.246.233:9100/webapi/realtimetow', {key: 'remove', ip: ip, idc_id: id})
+      this.$post('/webapi/realtimetow', {key: 'remove', ip: ip, idc_id: id})
         .then(res => {
           this.$Message.info('解封成功')
           this.confirm = false
@@ -291,7 +290,7 @@ export default {
         })
     },
     getData () {
-      this.$post('http://113.105.246.233:9100/webapi/realtimetow', {key: 'show'})
+      this.$post('/webapi/realtimetow', {key: 'show'})
         .then(res => {
           let show = false
           for (let i = 0; i < res.length; i++) {

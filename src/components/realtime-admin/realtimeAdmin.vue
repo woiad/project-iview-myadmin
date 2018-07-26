@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     getData () {
-      this.$post('http://113.105.246.233:9100/webapi/realtimetow', {key: 'show'})
+      this.$post('/webapi/realtimetow', {key: 'show'})
         .then(res => {
           this.$refs.spin.style.display = 'none'
           for (let i = 0; i < res.length; i++) {

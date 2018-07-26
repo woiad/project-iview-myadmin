@@ -86,7 +86,7 @@ export default {
     }
   },
   mounted () {
-    this.$post('http://113.105.246.233:9100/webapi/public', {key: 'idc_root'})
+    this.$post('/webapi/public', {key: 'idc_root'})
       .then(res => {
         if (JSON.stringify[res] !== '{}' && res !== undefined) {
           res.forEach((item, index) => {
@@ -105,7 +105,7 @@ export default {
         obj.idc_root_name = this.idcName
       }
       let chart = JSON.stringify(obj)
-      this.$post('http://113.105.246.233:9100/webapi/log', {key: 'warning', content: chart})
+      this.$post('/webapi/log', {key: 'warning', content: chart})
         .then(res => {
           this.mistakeData = []
           this.originData = []

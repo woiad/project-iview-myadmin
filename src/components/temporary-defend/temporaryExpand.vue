@@ -93,7 +93,7 @@ export default {
     getData () {
       this.temData = []
       console.log(this.row.idc_name)
-      this.$post('http://113.105.246.233:9100/webapi/temfwip', {key: 'show'})
+      this.$post('/webapi/temfwip', {key: 'show'})
         .then(res => {
           for (let i in res) {
             for (let j in res[i]) {
@@ -118,7 +118,7 @@ export default {
     confirmDec () {
       console.log(this.delData.row.ip)
       let ip = this.delData.row.ip
-      this.$post('http://113.105.246.233:9100/webapi/temfwip', {key: 'del', ip: ip})
+      this.$post('/webapi/temfwip', {key: 'del', ip: ip})
         .then(res => {
           this.$Message.info('删除成功')
           this.getData()

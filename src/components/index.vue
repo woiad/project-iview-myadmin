@@ -125,7 +125,7 @@ export default {
     },
     handleClickUserDropdown (name) {
       if (name === 'loginout') {
-        axios.get('http://113.105.246.233:9100/login_out')
+        axios.get('/login_out')
           .then(res => {
             console.log(res)
             this.$Message.info('退出成功')
@@ -170,7 +170,7 @@ export default {
     saveEditPass () { // 保存修改后的密码
       this.$refs['editPasswordForm'].validate((valid) => {
         if (valid) {
-          this.$post('http://113.105.246.233:9100/webapi/user', {
+          this.$post('/webapi/user', {
             key: 'updatepwd',
             pwd: md5(this.editPasswordForm.rePass)
           })
@@ -191,7 +191,7 @@ export default {
     }
   },
   mounted () {
-    this.$post('http://113.105.246.233:9100/webapi/user', {key: 'level'})
+    this.$post('/webapi/user', {key: 'level'})
       .then((res) => {
         this.user = res
         this.message = res.user_level

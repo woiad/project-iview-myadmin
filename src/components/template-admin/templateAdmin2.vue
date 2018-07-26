@@ -203,7 +203,7 @@ export default {
       this.initModal()
       this.modifierData = {}
       if (subBol) {
-        this.$post('http://113.105.246.233:9100/webapi/template', {key: 'update', content: submitDataChart, id: submitData.id})
+        this.$post('/webapi/template', {key: 'update', content: submitDataChart, id: submitData.id})
           .then(res => {
             console.log(res)
             this.$Message.info('修改成功')
@@ -231,7 +231,7 @@ export default {
       this.getBuildTem()
     },
     getBuildTem () {
-      this.$post('http://113.105.246.233:9100/webapi/template', {key: 'get_default_tem', content: 'default'})
+      this.$post('/webapi/template', {key: 'get_default_tem', content: 'default'})
         .then(res => {
           let buildDefaultData = res
           buildDefaultData[0].tem_level = util.evil(buildDefaultData[0].tem_level)
@@ -249,7 +249,7 @@ export default {
       this.modalData = {}
       let chart = JSON.stringify(submitData)
       if (buiBol) {
-        this.$post('http://113.105.246.233:9100/webapi/template', {key: 'add', content: chart})
+        this.$post('/webapi/template', {key: 'add', content: chart})
           .then(res => {
             this.$Message.info('提交成功')
             this.temShow()
@@ -295,7 +295,7 @@ export default {
     },
     confirmDel () {
       let delData = this.originData[this.delInd]
-      this.$post('http://113.105.246.233:9100/webapi/template', {key: 'del', id: delData.id})
+      this.$post('/webapi/template', {key: 'del', id: delData.id})
         .then(res => {
           this.$Message.info('删除成功')
           this.temShow()
@@ -314,7 +314,7 @@ export default {
     },
     temShow () {
       // 模板查看
-      this.$post('http://113.105.246.233:9100/webapi/template', {key: 'show'})
+      this.$post('/webapi/template', {key: 'show'})
         .then(res => {
           this.temData = []
           this.originData = res

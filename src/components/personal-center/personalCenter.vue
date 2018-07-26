@@ -37,7 +37,7 @@ export default {
     }
   },
   mounted () {
-    this.$post('http://113.105.246.233:9100/webapi/user', {key: 'level'})
+    this.$post('/webapi/user', {key: 'level'})
       .then(res => {
         this.personalMess = res
         console.log(this.personalMess)

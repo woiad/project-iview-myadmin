@@ -161,7 +161,7 @@ export default {
         obj.ip = this.ip
       }
       let chart = JSON.stringify(obj)
-      this.$post('http://113.105.246.233:9100/webapi/log', {key: 'towlog', content: chart})
+      this.$post('/webapi/log', {key: 'towlog', content: chart})
         .then(res => {
           this.tracData = []
           this.originData = []

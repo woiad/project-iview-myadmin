@@ -454,7 +454,7 @@ export default {
         subObj.idc_towopenip[ip[i]] = remarks[i]
       }
       let chart = JSON.stringify(subObj)
-      this.$post('http://113.105.246.233:9100/webapi/global', {key: 'add', content: chart})
+      this.$post('/webapi/global', {key: 'add', content: chart})
         .then(res => {
           this.$Message.info('机房添加成功')
           this.getData()
@@ -499,7 +499,7 @@ export default {
       let id = changeObj.id
       let changeChart = JSON.stringify(changeObj)
       if (flag) {
-        this.$post('http://113.105.246.233:9100/webapi/global', {key: 'update', content: changeChart, id: id})
+        this.$post('/webapi/global', {key: 'update', content: changeChart, id: id})
           .then(res => {
             this.$Message.info('修改成功')
             this.macRoomModifier = false
@@ -567,7 +567,7 @@ export default {
     },
     confirmDelMac () { // 确认删除机房
       let id = this.adminData[this.delIndex].id
-      this.$post('http://113.105.246.233:9100/webapi/global', {key: 'del', id: id})
+      this.$post('/webapi/global', {key: 'del', id: id})
         .then(res => {
           this.$Message.info('删除成功')
           this.macRoomDelShow = false
@@ -615,7 +615,7 @@ export default {
       }
     },
     getData () { // 获取页面的初始显示数据
-      this.$post('http://113.105.246.233:9100/webapi/global', {key: 'show'})
+      this.$post('/webapi/global', {key: 'show'})
         .then(res => {
           this.adminData = []
           for (let i = 0; i < res.length; i++) {

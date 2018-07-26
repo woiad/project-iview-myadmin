@@ -1,0 +1,66 @@
+{
+  "user":[
+    {
+      "name": "woiad",
+      "id": 0,
+      "acccess_num": 3,
+      "access": [
+        [
+          {"name": "add", "val": false},
+          {"name": "read","val": true},
+          {"name":"del","val": false},
+          {"name":"mod","val": true}
+        ],
+        [
+          {"name": "修改密码", "val": false},
+          {"name": "修改名称","val": true},
+          {"name":"修改手机号","val": false}
+        ],
+        [
+          {"name": "增加", "val": false},
+          {"name": "删除","val": true},
+          {"name":"修改","val": false}
+        ]
+      ]
+    },
+    {
+      "name": "kw",
+      "id": 1,
+      "access_num": 1,
+      "access": [
+        [
+          {"name": "add", "val": true},
+          {"name": "read","val": true},
+          {"name":"del","val": false},
+          {"name":"mod","val": true}
+        ],
+        [
+          {"name": "修改密码", "val": true},
+          {"name": "修改名称","val": true},
+          {"name":"修改手机号","val": false}
+        ]
+      ]
+    },
+    {
+      "name": "li",
+      "id": 2,
+      "access_num": 2,
+      "access": [
+        [
+          {
+            "name": "read",
+            "val": false
+          },
+          {
+            "name": "del",
+            "val": false
+          },
+          {
+            "name": "mod",
+            "val": false
+          }
+        ]
+      ]
+    }
+  ]
+}

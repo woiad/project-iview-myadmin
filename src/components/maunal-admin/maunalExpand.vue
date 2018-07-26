@@ -80,9 +80,6 @@ export default {
     row: {
       type: Object
     },
-    name: {
-      type: String
-    },
     level: {
       type: Object
     },
@@ -107,11 +104,11 @@ export default {
   },
   methods: {
     getData () {
-      this.$post('http://113.105.246.233:9100/webapi/manualtow', {key: 'show'})
+      this.$post('/webapi/manualtow', {key: 'show'})
         .then(res => {
           this.ipData = []
           res.forEach((item, index) => {
-            if (item.idc_name === this.name) {
+            if (item.idc_name === this.row.idc_name) {
               this.ipData.push(item)
             }
             setTimeout(() => {
@@ -131,7 +128,7 @@ export default {
     confirmDec () {
       let data = this.ipData
       let id = data[this.confirmInd].id
-      this.$post('http://113.105.246.233:9100/webapi/manualtow', {key: 'del', id: id})
+      this.$post('/webapi/manualtow', {key: 'del', id: id})
         .then(res => {
           this.$Message.info('解封成功')
           this.getData()

@@ -86,7 +86,7 @@ export default {
     getData () {
       let obj = util.dateProces(this.date.start, this.date.end, this.time.start, this.time.end, this.ip)
       let chart = JSON.stringify(obj)
-      this.$post('http://113.105.246.233:9100/webapi/log', {key: 'operlog', content: chart})
+      this.$post('/webapi/log', {key: 'operlog', content: chart})
         .then(res => {
           this.optionData = []
           this.originData = []

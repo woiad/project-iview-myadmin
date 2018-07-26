@@ -122,7 +122,7 @@ export default {
   methods: {
     getData () {
       this.idcData = []
-      this.$post('http://113.105.246.233:9100/webapi/temfwip', {key: 'show'})
+      this.$post('/webapi/temfwip', {key: 'show'})
         .then(res => {
           if (res instanceof Array) {
             res.forEach((item, index) => {
@@ -133,7 +133,7 @@ export default {
         .catch(err => {
           console.log(err)
         })
-      this.$post('http://113.105.246.233:9100/webapi/public', {key: 'idc_root'})
+      this.$post('/webapi/public', {key: 'idc_root'})
         .then(res => {
           this.idcList = []
           res.forEach((item, index) => {
@@ -174,7 +174,7 @@ export default {
       obj.idc_ip_bps = this.defData.idc_ip_bps
       obj.idc_ip_tow_time = this.defData.idc_ip_tow_time
       let chart = JSON.stringify(obj)
-      this.$post('http://113.105.246.233:9100/webapi/temfwip', {key: 'add', content: chart})
+      this.$post('/webapi/temfwip', {key: 'add', content: chart})
         .then(res => {
           this.$Message.info('添加成功')
           this.getData()
@@ -192,7 +192,7 @@ export default {
     confirmDec () {
       console.log(this.delData.row.ip)
       let ip = this.delData.row.ip
-      this.$post('http://113.105.246.233:9100/webapi/temfwip', {key: 'del', ip: ip})
+      this.$post('/webapi/temfwip', {key: 'del', ip: ip})
         .then(res => {
           this.$Message.info('删除成功')
           this.getData()

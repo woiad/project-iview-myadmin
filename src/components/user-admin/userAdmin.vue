@@ -271,7 +271,7 @@ export default {
     },
     levelTypeChose () { // 获取权限模板
       this.levelTypeShow = true
-      this.$post('http://113.105.246.233:9100/webapi/template', {key: 'get_default_tem', content: 'all'})
+      this.$post('/webapi/template', {key: 'get_default_tem', content: 'all'})
         .then(res => {
           this.temData = res
           this.choseList = []
@@ -326,7 +326,7 @@ export default {
       } else {
         let obj = this.submitMessOpt(this.accessListData, this.userAddInpData.userName, this.userAddInpData.userPassword, this.userAddInpData.userAccounts, this.userAddInpData.userDepartment, this.userAddInpData.userRemarks)
         let subChart = JSON.stringify(obj)
-        this.$post('http://113.105.246.233:9100/webapi/user', {key: 'add', content: subChart})
+        this.$post('/webapi/user', {key: 'add', content: subChart})
           .then(res => {
             if (res[1] === 200) {
               this.$Message.info('用户新增成功！')
@@ -369,7 +369,7 @@ export default {
       let flag = this.userModifierChange(this.userModifierData, modifierDataObj)
       let id = this.userModifierData.id
       if (flag) {
-        this.$post('http://113.105.246.233:9100/webapi/user', {key: 'update', type: 'level', content: chartSub, id: id})
+        this.$post('/webapi/user', {key: 'update', type: 'level', content: chartSub, id: id})
           .then(res => {
             if (res[1] === 200) {
               this.$Message.info('修改成功')
@@ -436,7 +436,7 @@ export default {
       this.$refs['editPasswordForm'].validate((valid) => {
         if (valid) {
           this.savePassLoading = true
-          this.$post('http://113.105.246.233:9100/webapi/user', {key: 'update', type: 'passwd', content: md5(this.editPasswordForm.rePass), id: modifierId})
+          this.$post('/webapi/user', {key: 'update', type: 'passwd', content: md5(this.editPasswordForm.rePass), id: modifierId})
             .then(res => {
               console.log(res)
               if (res[1] === 200) {
@@ -460,7 +460,7 @@ export default {
     },
     confirmDel () { // 确认删除
       let id = this.userData[this.delId].id
-      this.$post('http://113.105.246.233:9100/webapi/user', {key: 'del', id: id})
+      this.$post('/webapi/user', {key: 'del', id: id})
         .then(res => {
           if (res[1] === 200) {
             this.$Message.info('删除成功')
@@ -473,7 +473,7 @@ export default {
         })
     },
     getUserData () { // 用户管理界面初始数据
-      this.$post('http://113.105.246.233:9100/webapi/user', {key: 'show'})
+      this.$post('/webapi/user', {key: 'show'})
         .then(res => {
           this.userData = []
           for (let i = 0; i < res.length; i++) {

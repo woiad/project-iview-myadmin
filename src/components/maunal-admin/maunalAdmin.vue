@@ -4,7 +4,7 @@
       <Button type="primary" icon="ios-plus-empty" @click="buildClick" :disabled="!levelMess['新建']">新建封停ip</Button>
     </div>
     <div class="table">
-      <i-table :columns="columnsData" :data="idcData" @on-expand="expand"></i-table>
+      <i-table :columns="columnsData" :data="idcData"></i-table>
     </div>
     <div class="modal">
       <div class="modal">
@@ -91,7 +91,7 @@ export default {
   },
   methods: {
     getData () {
-      this.$post('http://113.105.246.233:9100/webapi/public', {key: 'idc_root'})
+      this.$post('/webapi/public', {key: 'idc_root'})
         .then(res => {
           res.forEach((item, index) => {
             this.idcData.push(item)
@@ -102,7 +102,7 @@ export default {
         })
     },
     getIpData () {
-      this.$post('http://113.105.246.233:9100/webapi/manualtow', {key: 'show'})
+      this.$post('/webapi/manualtow', {key: 'show'})
         .then(res => {
           this.addData = []
           res.forEach((item, index) => {
@@ -112,9 +112,6 @@ export default {
         .catch(err => {
           console.log(err)
         })
-    },
-    expand (data, status) {
-      this.idc_name = data.idc_name
     },
     buildClick () {
       this.buildIpShow = true
@@ -139,7 +136,7 @@ export default {
           id = this.idcData[i].id
         }
       }
-      this.$post('http://113.105.246.233:9100/webapi/manualtow', {key: 'add', ip: this.buildData.ip, idc_root_id: id, remarks: this.buildData.remarks})
+      this.$post('/webapi/manualtow', {key: 'add', ip: this.buildData.ip, idc_root_id: id, remarks: this.buildData.remarks})
         .then(res => {
           this.$Message.info('添加成功')
           this.buildIpShow = false
@@ -186,5 +183,8 @@ export default {
     margin: 10px 0 8px 0;
     font-size: 12px;
     font-weight: normal;
+  }
+  .table{
+    margin-bottom: 150px;
   }
 </style>
