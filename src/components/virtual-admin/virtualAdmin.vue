@@ -1,18 +1,17 @@
 <template>
-  <access-list :accessListName="$route.name"></access-list>
+  <div class="virtual-container">
+    虚拟管理
+  </div>
 </template>
 
 <script>
-import accessList from '.././access-list/accessList'
+
 export default {
   name: 'virtualAdmin',
   data () {
     return {
       message: {}
     }
-  },
-  components: {
-    accessList
   }
 }
 </script>

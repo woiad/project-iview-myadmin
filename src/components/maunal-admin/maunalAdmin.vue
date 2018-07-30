@@ -18,8 +18,7 @@
               <label>备注</label>
               <i-input placeholder="请输入备注" v-model="buildData.remarks"></i-input>
             </div>
-            <div class="item">
-              <h1>机房名称：{{choseIdc}}</h1>
+            <div class="item" style="margin-top: 20px">
               <Select v-model="choseIdc"  placeholder="请选择机房">
                 <Option v-for="(item, index) in idcData" :value="item.idc_name" :key="index">{{ item.idc_name }}</Option>
               </Select>
@@ -50,7 +49,6 @@ export default {
             return h(maunalExpand, {
               props: {
                 row: params.row,
-                name: this.idc_name,
                 level: this.levelMess,
                 originData: this.addData
               },
@@ -93,9 +91,11 @@ export default {
     getData () {
       this.$post('/webapi/public', {key: 'idc_root'})
         .then(res => {
-          res.forEach((item, index) => {
-            this.idcData.push(item)
-          })
+          if (JSON.stringify(res) !== '{}' && res !== undefined) {
+            res.forEach((item, index) => {
+              this.idcData.push(item)
+            })
+          }
         })
         .catch(err => {
           console.log(err)
@@ -105,9 +105,11 @@ export default {
       this.$post('/webapi/manualtow', {key: 'show'})
         .then(res => {
           this.addData = []
-          res.forEach((item, index) => {
-            this.addData.push(item)
-          })
+          if (JSON.stringify(res) !== '{}' && res !== undefined) {
+            res.forEach((item, index) => {
+              this.addData.push(item)
+            })
+          }
         })
         .catch(err => {
           console.log(err)
@@ -138,6 +140,10 @@ export default {
       }
       this.$post('/webapi/manualtow', {key: 'add', ip: this.buildData.ip, idc_root_id: id, remarks: this.buildData.remarks})
         .then(res => {
+          if (res[1] === 403) {
+            alert(res[2])
+            return true
+          }
           this.$Message.info('添加成功')
           this.buildIpShow = false
           this.buildIpCancel()

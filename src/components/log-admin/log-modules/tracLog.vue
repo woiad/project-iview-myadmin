@@ -184,7 +184,7 @@ export default {
             this.pageShow = true
             this.pageNum = res.length
             this.tracData = this.originData.slice(0, 10)
-          } else if (res.length < 10) {
+          } else if (res.length <= 10) {
             this.pageShow = false
           }
         })

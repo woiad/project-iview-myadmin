@@ -332,6 +332,8 @@ export default {
               this.$Message.info('用户新增成功！')
               this.getUserData()
               this.userAddFlag = false
+            } else if (res[1] === 403) {
+              alert(res[2])
             }
           })
           .catch(err => {

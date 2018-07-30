@@ -35,6 +35,12 @@ export default {
             return true
           }
         }
+        for (let i in this.$store.state.userLevel['ip防护管理']) {
+          if (i === to.name) {
+            this.$store.commit('changeActive', 'ip防护管理')
+            return true
+          }
+        }
       }
       this.$store.commit('changeActive', to.name)
     }
@@ -148,5 +154,8 @@ export default {
   }
   .临时防护管理{
     background-image: url(../../assets/denfend.png);
+  }
+  .ip防护管理{
+    background-image: url(../../assets/ipadmin.png);
   }
 </style>

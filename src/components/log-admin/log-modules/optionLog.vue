@@ -100,7 +100,7 @@ export default {
             this.pageNum = res.length
             this.pageShow = true
             this.optionData = this.originData.slice(0, 10)
-          } else if (res.length < 10) {
+          } else if (res.length <= 10) {
             this.pageShow = false
           }
         })

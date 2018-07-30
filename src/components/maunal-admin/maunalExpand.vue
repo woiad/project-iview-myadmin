@@ -73,7 +73,8 @@ export default {
       confirmShow: false,
       confirmInd: '',
       loadingShow: false,
-      inter: ''
+      inter: '',
+      spinShow: false
     }
   },
   props: {
@@ -107,15 +108,23 @@ export default {
       this.$post('/webapi/manualtow', {key: 'show'})
         .then(res => {
           this.ipData = []
-          res.forEach((item, index) => {
-            if (item.idc_name === this.row.idc_name) {
-              this.ipData.push(item)
-            }
-            setTimeout(() => {
-              this.$refs.spin.style.display = 'none'
-              this.loadingShow = true
-            }, 500)
-          })
+          if (JSON.stringify(res) !== '{}' && res !== undefined) {
+            res.forEach((item, index) => {
+              if (item.idc_name === this.row.idc_name) {
+                this.ipData.push(item)
+              } else {
+                this.$refs.spin.style.display = 'none'
+                this.loadingShow = true
+              }
+              setTimeout(() => {
+                this.$refs.spin.style.display = 'none'
+                this.loadingShow = true
+              }, 500)
+            })
+          } else {
+            this.$refs.spin.style.display = 'none'
+            this.loadingShow = true
+          }
         })
         .catch(err => {
           console.log(err)

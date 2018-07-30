@@ -25,8 +25,7 @@
             <label>牵引时间&nbsp;&nbsp; (单位：分钟)</label>
             <i-input placeholder="请输入牵引时间" v-model="defData.idc_ip_tow_time"></i-input>
           </div>
-          <div class="item">
-            <label>机房名称：&nbsp;{{defData.idc_name}}</label>
+          <div class="item" style="margin-top: 20px">
             <Select v-model="defData.idc_name"  placeholder="请选择机房">
               <Option v-for="item in idcList" :value="item.idc_name" :key="item.idc_name">{{ item.idc_name }}</Option>
             </Select>
@@ -176,6 +175,10 @@ export default {
       let chart = JSON.stringify(obj)
       this.$post('/webapi/temfwip', {key: 'add', content: chart})
         .then(res => {
+          if (res[1] === 403) {
+            alert(res[2])
+            return true
+          }
           this.$Message.info('添加成功')
           this.getData()
           this.temCancel()

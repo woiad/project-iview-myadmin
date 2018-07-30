@@ -63,7 +63,6 @@
 <script>
 import axios from 'axios'
 import SlideBar from './slider/slide-bar'
-import accessList from './access-list/accessList'
 import navBar from './navBar/navBar'
 import cookies from 'js-cookie'
 import tagsOpenList from './tagOpenList/tags-opend-list'
@@ -72,7 +71,6 @@ export default {
   name: 'index',
   components: {
     SlideBar,
-    accessList,
     navBar,
     tagsOpenList
   },

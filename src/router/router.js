@@ -1,5 +1,6 @@
 import index from '.././components/index'
 import logAdmin from '.././components/log-admin/logAdmin'
+import ipAdmin from '.././components/ip-admin/ipAdmin'
 export const otherRouter = {
   path: '/',
   name: 'home',
@@ -44,14 +45,6 @@ export const appRouter = [
     ]
   },
   {
-    path: '/historyAdmin',
-    name: 'historyAdmin',
-    component: index,
-    children: [
-      {path: 'index', name: '历史管理', component: () => import('@/components/history-admin/historyAdmin'), meta: {title: '历史管理'}}
-    ]
-  },
-  {
     path: '/realtimeAdmin',
     name: 'realtimeAdmin',
     component: index,
@@ -89,6 +82,23 @@ export const appRouter = [
     component: index,
     children: [
       {path: 'index', name: '临时防护管理', component: () => import('@/components/temporary-defend/temporaryDenfend'), meta: {title: '临时防护管理'}}
+    ]
+  },
+  {
+    path: '/ipAdmin',
+    name: 'ipAdmin',
+    component: index,
+    children: [
+      {
+        path: 'index',
+        name: 'ip防护管理',
+        component: ipAdmin,
+        redirect: '/ipAdmin/index/ipDefend',
+        children: [
+          {path: '/ipAdmin/index/ipDefend', name: 'ip防护设置', component: () => import('@/components/ip-admin/ip-modules/ipDefend'), meta: {title: 'ip防护设置'}},
+          {path: '/ipAdmin/index/ipSection', name: 'ip段防护设置', component: () => import('@/components/ip-admin/ip-modules/ipSection'), meta: {title: 'ip段防护设置'}}
+        ]
+      }
     ]
   },
   {

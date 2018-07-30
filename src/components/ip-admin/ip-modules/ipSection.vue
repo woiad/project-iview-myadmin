@@ -1,0 +1,417 @@
+<template>
+  <div class="ipSection-container">
+    <div class="build">
+      <Button type="primary" icon="ios-plus-empty" @click="bulidIp">IP段新建</Button>
+    </div>
+    <div class="query">
+      <div class="query-idcName">
+        <Select v-model="idcName" style="width:200px" placeholder="请选择机房">
+          <Option v-for="(item, index) in idcList" :value="item.idc_name" :key="index">{{ item.idc_name }}</Option>
+        </Select>
+      </div>
+      <div class="query-ip">
+        <i-input style="width: 200px" placeholder="请输入IP段" v-model="ip"></i-input>
+        <div class="but">
+          <Button type="primary" @click="ipQuery">查询</Button>
+        </div>
+      </div>
+    </div>
+    <div class="table">
+      <i-table :columns="columnsData" :data="ipsData"></i-table>
+    </div>
+    <div class="modal">
+      <Modal v-model="buildShow" title="新建IP段" @on-cancel="buildCancel">
+        <div class="text">
+          <div class="item">
+            <label>IP段 （IP前三位地址）</label>
+            <i-input v-model="buildData.ip" placeholder="请输入IP地址"></i-input>
+          </div>
+          <div class="item">
+            <label>开始地址</label>
+            <i-input v-model="buildData.ipStart" placeholder="请输入开始地址"></i-input>
+          </div>
+          <div class="item">
+            <label>结束地址</label>
+            <i-input v-model="buildData.ipEnd" placeholder="请输入结束地址"></i-input>
+          </div>
+          <div class="item">
+            <label>IP防护值 (单位： mb/s)</label>
+            <i-input v-model="buildData.idcIpBps" placeholder="请输入IP防护值"></i-input>
+          </div>
+          <div class="item">
+            <label>IP牵引时间 (单位： 分钟)</label>
+            <i-input v-model="buildData.time" placeholder="请输入IP牵引时间"></i-input>
+          </div>
+          <div class="item" style="margin-top: 20px">
+            <Select v-model="buildData.idcName" style="width:100%; display: block" placeholder="请选择机房">
+              <Option v-for="(item, index) in idcList" :value="item.idc_name" :key="index">{{ item.idc_name }}</Option>
+            </Select>
+          </div>
+        </div>
+        <div slot="footer">
+          <Button @click="buildCancel">重置</Button>
+          <Button primary="default" @click="submitData">提交</Button>
+        </div>
+      </Modal>
+      <Modal v-model="midifiShow" title="修改IP段" @on-cancel="modifierCancel">
+        <div class="text">
+          <div class="item">
+            <label>IP段防护值 (单位： mb/s)</label>
+            <input v-model="modifierData.idcIpBps" :placeholder="originData.idc_ip_list_bps" class="inp">
+          </div>
+          <div class="item">
+            <label>牵引时间 (单位： 分钟)</label>
+            <input v-model="modifierData.time" :placeholder="originData.idc_ip_list_tow_time" class="inp">
+          </div>
+        </div>
+        <div slot="footer">
+          <Button @click="modifierCancel">重置</Button>
+          <Button type="primary" @click="submitModifierData">提交</Button>
+        </div>
+      </Modal>
+      <Modal v-model="delConfirm" width="360">
+        <p slot="header" style="color: rgb(255, 102, 0);text-align: center">
+          <Icon type="information-circled"></Icon>
+          <span>删除确认</span>
+        </p>
+        <div style="text-align: center">
+          <p>该ip段一经删除，无法恢复</p>
+        </div>
+        <div slot="footer">
+          <Button type="error" size="large" long @click="confirmDel">删除</Button>
+        </div>
+      </Modal>
+    </div>
+    <div class="page">
+      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'ipSection',
+  data () {
+    return {
+      columnsData: [
+        {
+          title: '机房名称',
+          key: 'idc_ip_list_name'
+        },
+        {
+          title: 'IP段',
+          key: 'idc_ip_list_ip'
+        },
+        {
+          title: '开始地址',
+          key: 'idc_ip_list_start'
+        },
+        {
+          title: '结束地址',
+          key: 'idc_ip_list_end'
+        },
+        {
+          title: '防护值 （单位：mb/s）',
+          key: 'idc_ip_list_bps',
+          width: 170
+        },
+        {
+          title: '牵引时间 (单位：分钟)',
+          key: 'idc_ip_list_tow_time',
+          width: 170
+        },
+        {
+          title: '操作',
+          width: 150,
+          align: 'center',
+          render: (h, params) => {
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.modifierShow(params)
+                  }
+                }
+              }, '修改'),
+              h('Button', {
+                props: {
+                  type: 'error',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    this.delShow(params)
+                  }
+                }
+              }, '删除')
+            ])
+          }
+        }
+      ],
+      ipsData: [],
+      idcName: '',
+      ip: '',
+      idcList: [],
+      buildShow: false,
+      buildData: {
+        ip: '',
+        idcIpBps: '',
+        time: '',
+        idcName: '',
+        ipStart: '',
+        ipEnd: ''
+      },
+      midifiShow: false,
+      modifierData: {
+        idcIpBps: '',
+        time: ''
+      },
+      originData: {},
+      delConfirm: false,
+      delData: {},
+      allData: [],
+      pageNum: '',
+      pageShow: false
+    }
+  },
+  mounted () {
+    this.getIdcData()
+  },
+  methods: {
+    getIdcData () {
+      this.$post('/webapi/public', {key: 'idc_root'})
+        .then(res => {
+          res.forEach((item, index) => {
+            this.idcList.push(item)
+          })
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    getShowData (chart) {
+      this.$post('/webapi/ipfwset', {key: 'ipsshow', content: chart})
+        .then(res => {
+          this.ipsData = []
+          this.allData = []
+          if (JSON.stringify(res) !== '{}') {
+            res.forEach((item, index) => {
+              this.ipsData.push(item)
+              this.allData.push(item)
+            })
+          }
+          if (res.length > 10) {
+            this.pageNum = res.length
+            this.pageShow = true
+            this.ipsData = this.originData.slice(0, 10)
+          } else if (res.length <= 10) {
+            this.pageShow = false
+          }
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    ipQuery () {
+      let obj = {}
+      if (this.idcName === '' && this.ip === '') {
+        alert('请输入机房名称或IP地址')
+        return true
+      }
+      if (this.idcName !== '') {
+        for (let i = 0; i < this.idcList.length; i++) {
+          if (this.idcName === this.idcList[i].idc_name) {
+            obj.idc_id = this.idcList[i].id
+          }
+        }
+      } else {
+        obj.idc_id = 1
+      }
+      if (this.ip !== '') {
+        obj.idc_ip_list_ip = this.ip
+      } else {
+        obj.idc_ip_list_ip = ''
+      }
+      let chart = JSON.stringify(obj)
+      this.getShowData(chart)
+    },
+    bulidIp () {
+      this.buildShow = true
+    },
+    buildCancel () {
+      this.buildData.ip = ''
+      this.buildData.idcIpBps = ''
+      this.buildData.time = ''
+      this.buildData.idcName = ''
+      this.buildData.ipStart = ''
+      this.buildData.ipEnd = ''
+    },
+    submitData () {
+      let obj = {}
+      if (this.buildData.idcName === '' || this.buildData.ip === '' || this.buildData.idcIpBps === '' || this.buildData.time === '' || this.buildData.ipStart === '' || this.buildData.ipEnd === '') {
+        alert('请填写完整资料！')
+        return true
+      }
+      obj.ip_list = this.buildData.ip
+      obj.idc_root_name = this.buildData.idcName
+      obj.idc_ip_tow_time = this.buildData.time
+      obj.idc_ip_bps = this.buildData.idcIpBps
+      obj.idc_ip_start = this.buildData.ipStart
+      obj.idc_ip_end = this.buildData.ipEnd
+      for (let i = 0; i < this.idcList.length; i++) {
+        if (this.buildData.idcName === this.idcList[i].idc_name) {
+          obj.idc_id = this.idcList[i].id
+        }
+      }
+      let chart = JSON.stringify(obj)
+      this.$post('/webapi/ipfwset', {key: 'ipsadd', content: chart})
+        .then(res => {
+          if (res[1] === 403) {
+            alert(res[2])
+          } else if (res[1] === 200) {
+            this.$Message.info('提交成功！')
+            this.buildCancel()
+            this.buildShow = false
+            if (this.idcName !== '') {
+              this.ipQuery()
+            }
+          }
+        })
+        .catch(err => {
+          this.$Message.info('提交失败' + err)
+        })
+    },
+    modifierShow (params) {
+      this.originData = params.row
+      console.log(params)
+      this.midifiShow = true
+    },
+    modifierCancel () {
+      this.modifierData.idcIpBps = ''
+      this.modifierData.time = ''
+    },
+    submitModifierData () {
+      let obj = {}
+      if (this.modifierData.time === '' && this.modifierData.idcIpBps === '') {
+        alert('请修改后再提交！')
+        return true
+      }
+      if (this.modifierData.time !== '') {
+        obj.idc_time = this.modifierData.time
+      } else {
+        obj.idc_time = this.originData.idc_ip_tow_time
+      }
+      if (this.modifierData.idcIpBps !== '') {
+        obj.idc_ip_bps = this.modifierData.idcIpBps
+      } else {
+        obj.idc_ip_bps = this.originData.idc_ip_bps
+      }
+      obj.ip = this.originData.idc_ip
+      obj.id = this.originData.id
+      let chart = JSON.stringify(obj)
+      this.$post('/webapi/ipfwset', {key: 'ipsupdate', content: chart})
+        .then(res => {
+          if (res[1] === 403) {
+            alert(res[2])
+          } else if (res[1] === 200) {
+            this.$Message.info('修改成功')
+            this.modifierCancel()
+            this.midifiShow = false
+            this.ipQuery()
+          }
+        })
+        .catch(err => {
+          this.$Message.info('修改失败' + err)
+        })
+    },
+    delShow (params) {
+      this.delConfirm = true
+      this.delData = params.row
+    },
+    confirmDel () {
+      let id = this.delData.id
+      this.$post('/webapi/ipfwset', {key: 'ipsdel', id: id})
+        .then(res => {
+          this.$Message.info('删除成功！')
+          this.delConfirm = false
+          this.ipQuery()
+        })
+        .catch(err => {
+          this.$Message.info('删除失败' + err)
+        })
+    },
+    pageChange (num) {
+      this.ipsData = this.allData.slice((num - 1) * 10, num * 10)
+    }
+  }
+}
+</script>
+
+<style scoped>
+  .ipSection-container{
+    width: 100%;
+    padding: 14px 16px;
+  }
+  .ipSection-container .query{
+    display: inline-block;
+  }
+  .ipSection-container .query-idcName, .ipSection-container .query-ip{
+    display: inline-block;
+  }
+  .ipSection-container .query-idcName{
+    margin-right: 8px;
+  }
+  .but{
+    display: inline-block;
+    margin-left: 8px;
+  }
+  .ipSection-container .build{
+    display: inline-block;
+    margin-right: 50px;
+  }
+  .ipSection-container .table{
+    margin-top: 15px;
+  }
+  .text .item{
+    margin-bottom: 10px;
+  }
+  .text .item:last-child{
+    margin-bottom: 0;
+  }
+  .text .item label{
+    display: inline-block;
+    margin-bottom: 8px;
+  }
+  .text .item .inp{
+    display: inline-block;
+    width: 100%;
+    height: 32px;
+    line-height: 1.5;
+    padding: 4px 7px;
+    font-size: 12px;
+    border: 1px solid #dddee1;
+    border-radius: 4px;
+    color: #495060;
+    background-color: #fff;
+    cursor: text;
+    transition: border-color .2s ;
+  }
+  .text .item .inp:focus{
+    border-color: #57a3f3;
+    outline: 0;
+    box-shadow: 0 0 0 2px rgba(45,140,240,.2)
+  }
+  .text .item .inp:hover{
+    border-color: #57a3f3;
+  }
+  .text .item .inp::placeholder{
+    color: #999999;
+  }
+</style>

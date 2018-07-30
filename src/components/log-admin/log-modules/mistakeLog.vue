@@ -118,7 +118,7 @@ export default {
             this.pageNum = res.length
             this.pageShow = true
             this.mistakeData = this.originData.slice(0, 10)
-          } else if (res.lenght < 10) {
+          } else if (res.length <= 10) {
             this.pageShow = false
           }
         })

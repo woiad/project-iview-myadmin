@@ -35,6 +35,7 @@
 
 <script>
 import cookies from 'js-cookie'
+import util from '../.././util/index'
 export default {
   name: 'home',
   data () {

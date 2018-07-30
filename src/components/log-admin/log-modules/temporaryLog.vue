@@ -110,7 +110,7 @@ export default {
             this.pageShow = true
             this.pageNum = res.length
             this.temData = this.originData.slice(0, 10)
-          } else if (res.lenght < 10) {
+          } else if (res.length <= 10) {
             this.pageShow = false
           }
         })

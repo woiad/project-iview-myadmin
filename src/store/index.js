@@ -75,7 +75,9 @@ const store = new Vuex.Store({
       localStorage.pageOpenList = JSON.stringify(state.pageOpenList)
     },
     setOpenList (state) {
-      state.pageOpenList = JSON.parse(localStorage.pageOpenList)
+      if (localStorage.pageOpenList !== null && localStorage.pageOpenList !== undefined) {
+        state.pageOpenList = JSON.parse(localStorage.pageOpenList)
+      }
     },
     removeTag (state, name) {
       state.pageOpenList.map((item, index) => {

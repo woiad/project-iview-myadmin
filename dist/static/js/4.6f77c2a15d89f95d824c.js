@@ -1,0 +1,2 @@
+webpackJsonp([4],{YSHK:function(n,t,e){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var a={render:function(){var n=this.$createElement;return(this._self._c||n)("div",{staticClass:"virtual-container"},[this._v("\n  虚拟管理\n")])},staticRenderFns:[]};var r=e("VU/8")({name:"virtualAdmin",data:function(){return{message:{}}}},a,!1,function(n){e("nqzR")},"data-v-f8b0bb8c",null);t.default=r.exports},nqzR:function(n,t){}});
+//# sourceMappingURL=4.6f77c2a15d89f95d824c.js.map
