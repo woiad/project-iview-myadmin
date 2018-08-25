@@ -34,11 +34,6 @@
             <label>IP牵引时间 (单位： 分钟)</label>
             <i-input v-model="buildData.time" placeholder="请输入IP牵引时间"></i-input>
           </div>
-          <div class="item" style="margin-top: 20px">
-            <Select v-model="buildData.idcName" style="width:100%; display: block" placeholder="请选择机房">
-              <Option v-for="(item, index) in idcList" :value="item.idc_name" :key="index">{{ item.idc_name }}</Option>
-            </Select>
-          </div>
         </div>
         <div slot="footer">
           <Button @click="buildCancel">重置</Button>
@@ -151,7 +146,6 @@ export default {
       buildShow: false,
       buildData: {
         ip: '',
-        idcName: '',
         idcIpBps: '',
         time: ''
       },
@@ -243,7 +237,7 @@ export default {
     },
     submitData () {
       let obj = {}
-      if (this.buildData.idcName === '' || this.buildData.ip === '' || this.buildData.idcIpBps === '' || this.buildData.time === '') {
+      if (this.buildData.ip === '' || this.buildData.idcIpBps === '' || this.buildData.time === '') {
         alert('请填写完整资料！')
         return true
       }
@@ -252,14 +246,8 @@ export default {
         return true
       }
       obj.ip = this.buildData.ip
-      obj.idc_root_name = this.buildData.idcName
       obj.time = this.buildData.time
       obj.idc_ip_bps = this.buildData.idcIpBps
-      for (let i = 0; i < this.idcList.length; i++) {
-        if (this.buildData.idcName === this.idcList[i].idc_name) {
-          obj.idc_id = this.idcList[i].id
-        }
-      }
       let chart = JSON.stringify(obj)
       this.$post('/webapi/ipfwset', {key: 'ipadd', content: chart})
         .then(res => {

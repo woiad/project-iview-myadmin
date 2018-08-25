@@ -1,2 +1,0 @@
-webpackJsonp([10],{RIPk:function(e,t){},YSHK:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var s={name:"virtualAdmin",data:function(){return{message:{}}},components:{accessList:n("Y9jH").a}},a={render:function(){var e=this.$createElement;return(this._self._c||e)("access-list",{attrs:{accessListName:this.$route.name}})},staticRenderFns:[]};var c=n("VU/8")(s,a,!1,function(e){n("RIPk")},"data-v-75135c7f",null);t.default=c.exports}});
-//# sourceMappingURL=10.2200319ed577b050dcdf.js.map

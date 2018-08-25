@@ -42,7 +42,8 @@
             <label>IP牵引时间 (单位： 分钟)</label>
             <i-input v-model="buildData.time" placeholder="请输入IP牵引时间"></i-input>
           </div>
-          <div class="item" style="margin-top: 20px">
+          <div class="item">
+            <label>机房名称：{{buildData.idcName}}</label>
             <Select v-model="buildData.idcName" style="width:100%; display: block" placeholder="请选择机房">
               <Option v-for="(item, index) in idcList" :value="item.idc_name" :key="index">{{ item.idc_name }}</Option>
             </Select>
@@ -210,7 +211,7 @@ export default {
           if (res.length > 10) {
             this.pageNum = res.length
             this.pageShow = true
-            this.ipsData = this.originData.slice(0, 10)
+            this.ipsData = this.allData.slice(0, 10)
           } else if (res.length <= 10) {
             this.pageShow = false
           }
@@ -306,12 +307,12 @@ export default {
       if (this.modifierData.time !== '') {
         obj.idc_time = this.modifierData.time
       } else {
-        obj.idc_time = this.originData.idc_ip_tow_time
+        obj.idc_time = this.originData.idc_ip_list_tow_time
       }
       if (this.modifierData.idcIpBps !== '') {
         obj.idc_ip_bps = this.modifierData.idcIpBps
       } else {
-        obj.idc_ip_bps = this.originData.idc_ip_bps
+        obj.idc_ip_bps = this.originData.idc_ip_list_bps
       }
       obj.ip = this.originData.idc_ip
       obj.id = this.originData.id
@@ -413,5 +414,9 @@ export default {
   }
   .text .item .inp::placeholder{
     color: #999999;
+  }
+  .page{
+    margin-top: 25px;
+    text-align: center;
   }
 </style>

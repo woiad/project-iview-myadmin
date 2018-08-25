@@ -67,9 +67,6 @@ export default {
       checkAll: '',
       moreDataShow: false,
       ind: '',
-      showSetFlow: false,
-      showTowTimeStart: false,
-      showFlow: false,
       modifierTracTime: false,
       modifierInd: '',
       inpDataTime: '',
@@ -83,22 +80,22 @@ export default {
   computed: {
     tracIpColumns () {
       let columns = []
-      if (this.showSetFlow) {
+      if (this.level['查看全部']) {
         columns.push({
           title: '设置防护值 (单位: mb/s)',
           key: 'set_flow',
-          width: 180,
-          align: 'center'
+          align: 'center',
+          width: 200
         })
       }
-      if (this.showFlow) {
+      if (this.level['查看全部']) {
         columns.push({
           title: '真实流量 (单位：mb/s)',
           key: 'flow',
           width: 180
         })
       }
-      if (this.showTowTimeStart) {
+      if (this.level['查看全部']) {
         columns.push({
           title: '牵引时间',
           key: 'tow_time_start',
@@ -109,7 +106,7 @@ export default {
         title: '操作',
         key: 'option',
         fixed: 'right',
-        width: 200,
+        width: 150,
         align: 'center',
         render: (h, params) => {
           return h('div', [
@@ -142,18 +139,7 @@ export default {
                   this.reliveIpBut(params)
                 }
               }
-            }, '解封ip'),
-            h('Button', {
-              props: {
-                size: 'small',
-                disabled: !this.level['查看全部']
-              },
-              on: {
-                click: () => {
-                  this.showMoreAccess(params)
-                }
-              }
-            }, '全部')
+            }, '解封ip')
           ])
         }
       })
@@ -161,7 +147,7 @@ export default {
         title: 'ip地址',
         key: 'ip',
         fixed: 'left',
-        width: 150
+        width: 200
       })
       columns.push({title: '攻击流量 (单位: mb/s)',
         key: 'ran_flow',
@@ -201,8 +187,13 @@ export default {
   },
   watch: {
     '$route' (to, from) {
-      clearInterval(this.inter)
-      return true
+      if (to.name === '实时牵引管理') {
+        this.inter = setInterval(() => {
+          this.getData()
+        }, 6000)
+      } else {
+        clearInterval(this.inter)
+      }
     }
   },
   created () {
@@ -230,11 +221,6 @@ export default {
     }
   },
   methods: {
-    showMoreAccess () {
-      this.showFlow = true
-      this.showSetFlow = true
-      this.showTowTimeStart = true
-    },
     showModifierTime (params) {
       this.modifierTracTime = true
       this.modifierInd = params.index
@@ -292,6 +278,7 @@ export default {
     getData () {
       this.$post('/webapi/realtimetow', {key: 'show'})
         .then(res => {
+          this.originData = []
           let show = false
           for (let i = 0; i < res.length; i++) {
             for (let k = 0; k < res[i].data.length; k++) {
@@ -299,11 +286,7 @@ export default {
                 res[i].data[k].tow_value = util.evil(res[i].data[k].tow_value)
               }
             }
-            if (this.originData.length === res.length) {
-              this.originData.splice(i, 1, res[i])
-            } else {
-              this.originData.push(res[i])
-            }
+            this.originData.push(res[i])
             if (this.originData[i].idc_name === this.row.idc_name && this.originData[i].data instanceof Array) {
               show = true
               this.dataShow = true

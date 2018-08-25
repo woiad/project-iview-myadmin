@@ -3,6 +3,9 @@
     <div class="admin-list">
       <div class="dropdown">
         <div class="dropwdown-item" ref="dropdownItem">
+          <div class="item id">
+            <span>机房id：{{data.id}}</span>
+          </div>
           <div class="item defend">
             <span>全墙防护总流量：{{data.idc_config.idc_flow_total }} (mb/s)</span>
           </div>
@@ -37,6 +40,9 @@
           <div class="item firewall-num">
             <span>防火墙台数：{{data.idc_config.idc_fw_num}} (台)</span>
           </div>
+          <div class="item idc-tow-show">
+            <span>实时牵引显示: &nbsp;{{data.idc_tow_show === '0' ? '显示' : '不显示'}}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -50,9 +56,6 @@ export default {
     data: {
       type: Object
     }
-  },
-  created () {
-    console.log(this.data)
   }
 }
 </script>

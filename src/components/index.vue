@@ -39,7 +39,7 @@
       </layout>
     </div>
     <div class="modal">
-      <Modal v-model="modifierPasswordShow" title="修改密码">
+      <Modal v-model="modifierPasswordShow" title="修改密码" @on-cancel="cancelEditPass">
         <Form ref="editPasswordForm" :model="editPasswordForm" :label-width="100" label-position="right" :rules="passwordValidate">
           <!--<FormItem label="原密码" prop="oldPass" :error="oldPassError">-->
           <!--<Input v-model="editPasswordForm.oldPass" placeholder="请输入现在使用的密码" ></Input>-->
@@ -127,7 +127,7 @@ export default {
           .then(res => {
             console.log(res)
             this.$Message.info('退出成功')
-            window.location.href = 'http://113.105.246.230:9100'
+            window.location.href = '/'
             // this.$router.push({name: 'login'})
           })
           .catch(err => {

@@ -82,6 +82,13 @@
             <label>机房备注：</label>
             <input v-model="macConfig.macRemarks">
           </div>
+          <div class="mac idc-tow-show">
+            <label>实时牵引: &nbsp;{{macConfig.idcTowShow}}</label>
+            <Select v-model="macConfig.idcTowShow" style="width: 200px;" placeholder="请选择实时牵引是否显示" placement="bottom" :transfer="true">
+              <Option value="显示">显示</Option>
+              <Option value="不显示">不显示</Option>
+            </Select>
+          </div>
         </div>
         <div slot="footer">
           <Button @click="cancelAddRoom">重置</Button>
@@ -144,10 +151,11 @@
             </div>
           </div>
           <div class="open-ip mac">
+            <Button type="primary" icon="ios-plus-empty" @click="addWhiteIp" style="margin-bottom: 15px">添加客户端白名单ip</Button>
             <p>客户端白名单ip</p>
             <div class="whilte-list-ip">
               <ul>
-                <li v-for="(val, key, index) in modifierData.idc_towopenip" :key="index">
+                <li v-for="(val, key, index) in modifierData.idc_towopenip" :key="index" v-if="ipShow">
                   <p><i ref="ipName">{{key}}</i> &nbsp;&nbsp;&nbsp;备注：<i ref="ipRemarks">{{val}}</i></p>
                   <span class="del" @click="delAddIp(index)"><Icon type="ios-trash-outline"></Icon>删除</span>
                   <span class="modifier" @click="midifierAddip(index)"><Icon type="ios-compose-outline"></Icon>修改</span>
@@ -163,13 +171,20 @@
             <label>机房备注：</label>
             <input v-model="macConfig.macRemarks" :placeholder="modifierData.idc_Remarks">
           </div>
+          <div class="mac idc-tow-show">
+            <label>实时牵引：&nbsp;{{showText()}}</label>
+            <Select v-model="macConfig.idcTowShow" style="width:200px;" :placeholder="modifierData.idc_tow_show === '0' ? '显示' : '不显示'">
+              <Option value="显示">显示</Option>
+              <Option value="不显示">不显示</Option>
+            </Select>
+          </div>
         </div>
         <div slot="footer">
           <Button @click="cancelAddRoom">重置</Button>
           <Button type="primary" @click="subMacModifier">提交</Button>
         </div>
       </Modal>
-      <Modal v-model="addIpShow" :title="addTitle">
+      <Modal v-model="addIpShow" :title="addTitle" @on-cancel="addIpCancel">
         <div>
           <div class="ip">
             <label style="display: inline-block; margin-bottom: 10px;">白名单ip:</label>
@@ -241,6 +256,10 @@ export default {
           key: 'idc_Remarks'
         },
         {
+          title: '机房id',
+          key: 'id'
+        },
+        {
           title: '操作',
           key: 'option',
           width: 250,
@@ -292,10 +311,11 @@ export default {
         macTwoTowTime: '',
         macFwNum: '',
         macTowIp: '',
-        macRemarks: ''
+        macRemarks: '',
+        idcTowShow: ''
       },
       whilteListIndex: '', // 添加的白名单ip的索引值
-      modifierIndex: '', // 修改机房的索引值
+      modifierIndex: '', // 修改白名单ip的索引值
       addIpShow: false, // 添加白名单ip的 modal 弹出 ，该对话框可以添加白名单ip
       addTitle: '', // modal title
       whilteListIp: [], // 所有的白名单ip
@@ -314,9 +334,13 @@ export default {
         idc_config: {}
       },
       delIndex: '', // 删除机房的index
+      modifierIdcInd: '',
       macRoomDelShow: false, // 删除机房的 modal
       modifierDataOriArr: [], // 添加的所有白名单ip，为了辨别，用户在修改时是否删除了白名单ip
-      levelMess: {}
+      levelMess: {}, // 全局管理权限
+      originTowIp: '', // 在修改机房按钮处添加客户端白名单ip时，保存原来的数组，后与新添加的数组进行比对
+      ipShow: false, // 修改机房客户端白名单时，会影响到其他机房的数据，所以需要重新渲染一次
+      text: ''
     }
   },
   methods: {
@@ -344,36 +368,46 @@ export default {
           ipObj.ipName = this.addIp.ipName
           ipObj.ipRemarks = this.addIp.ipRemarks
           this.whilteListIp.push(ipObj)
+          if (this.distinction === '修改') {
+            console.log(this.modifierIdcInd)
+            this.adminData[this.modifierIdcInd].idc_towopenip[ipObj.ipName] = ipObj.ipRemarks
+          }
           this.addIpCancel()
           this.addIpShow = false
           this.$Message.info('添加成功')
         } else {
           window.alert('请填写完整的白名单ip信息!')
         }
+        return true
       } else if (this.addTitle === '白名单ip修改' && this.distinction !== '修改') { // 修改白名单ip
-        if (this.addIp.ipName !== '' && this.addIp.ipRemarks !== '') {
-          if (!util.regIp(this.addIp.ipName)) {
-            alert('ip格式不正确！')
-            return true
-          }
-          this.$refs.AddipName[this.modifierIndex].innerHTML = this.addIp.ipName
-          this.$refs.AddipRemarks[this.modifierIndex].innerHTML = this.addIp.ipRemarks
-          this.addIpCancel()
-          this.addIpShow = false
-          this.$Message.info('修改成功')
-        } else {
-          window.alert('请填写完整的白名单ip信息!')
-        }
-      }
-      if (this.distinction === '修改') { // 此处修改是机房修改处的白名单修改
-        if (this.addIp.ipname === '' || this.addIp.ipRemarks === '') {
-          alert('请填写完整数据!')
+        if (this.addIp.ipName === '' && this.addIp.ipRemarks === '') {
+          alert('请修改数据后再提交!')
           return true
         }
-        if (!util.regIp(this.addIp.ipName)) {
+        if (!util.regIp(this.addIp.ipName) && this.addIp.ipName !== '') {
           alert('ip格式不正确！')
           return true
         }
+        if (this.addIp.ipName !== '') {
+          this.$refs.AddipName[this.modifierIndex].innerHTML = this.addIp.ipName
+        }
+        if (this.addIp.ipRemarks) {
+          this.$refs.AddipRemarks[this.modifierIndex].innerHTML = this.addIp.ipRemarks
+        }
+        this.addIpCancel()
+        this.addIpShow = false
+        this.$Message.info('修改成功')
+      }
+      if (this.distinction === '修改') { // 此处修改是机房修改处的白名单修改
+        if (this.addIp.ipName === '' && this.addIp.ipRemarks === '') {
+          alert('请修改数据后再提交!')
+          return true
+        }
+        if (!util.regIp(this.addIp.ipName) && this.addIp.ipName !== '') {
+          alert('ip格式不正确！')
+          return true
+        }
+        console.log(this.modifieredIp)
         if (this.addIp.ipName !== '') {
           this.$refs.ipName[this.modifierIndex].innerHTML = this.addIp.ipName
         }
@@ -384,13 +418,14 @@ export default {
         this.addIpShow = false
       }
     },
-    midifierAddip (index) { // 修改 添加客户端白名单ip 和 客户端白名单ip 的白名单ip
+    midifierAddip (index, key) { // 修改 添加客户端白名单ip 和 客户端白名单ip 的白名单ip
+      console.log(this.$refs)
       this.addIpShow = true
       this.addTitle = '白名单ip修改'
       this.modifierIndex = index
       if (this.distinction === '修改') {
-        this.placeholder.ipName = this.$refs.ipName[index].innerHTML
-        this.placeholder.ipRemarks = this.$refs.ipRemarks[index].innerHTML
+        this.placeholder.ipName = this.$refs.ipName[this.modifierIndex].innerHTML
+        this.placeholder.ipRemarks = this.$refs.ipRemarks[this.modifierIndex].innerHTML
       } else {
         this.placeholder.ipName = this.$refs.AddipName[index].innerHTML
         this.placeholder.ipRemarks = this.$refs.AddipRemarks[index].innerHTML
@@ -423,14 +458,14 @@ export default {
       if (this.macConfig.macName === '' || this.macConfig.macFlowTotal === '' || this.macConfig.macOverTopFlow === '' ||
         this.macConfig.macDefaultTime === '' || this.macConfig.macTowTime === '' || this.macConfig.macOneTowCum === '' ||
         this.macConfig.macOneTowTime === '' || this.macConfig.macTwoTowCum === '' || this.macConfig.macTwoTowTime === '' ||
-        this.macConfig.macFwNum === '' || this.macConfig.macRemarks === '' || this.macConfig.macTowIp === '' || this.whilteListIp.length === 0) {
+        this.macConfig.macFwNum === '' || this.macConfig.macRemarks === '' || this.macConfig.macTowIp === '' || this.macConfig.idcTowShow === '' || this.whilteListIp.length === 0) {
         window.alert('请填写完成机房信息！')
         return true
       }
-      if (!util.regIp(this.macConfig.macTowIp)) {
-        alert('ip格式不正确！')
-        return true
-      }
+      // if (!util.regIp(this.macConfig.macTowIp)) {
+      //   alert('ip格式不正确！')
+      //   return true
+      // }
       let subObj = {}
       let ip = {}
       let remarks = {}
@@ -448,6 +483,7 @@ export default {
       subObj.idc_Remarks = this.macConfig.macRemarks
       subObj.idc_towopenip = {}
       subObj.idc_towip = this.macConfig.macTowIp
+      subObj.idc_tow_show = this.macConfig.idcTowShow === '显示' ? '0' : '1'
       for (let i = 0; i < this.whilteListIp.length; i++) {
         ip[i] = this.whilteListIp[i].ipName
         remarks[i] = this.whilteListIp[i].ipRemarks
@@ -480,23 +516,45 @@ export default {
       this.macConfig.macFwNum = ''
       this.macConfig.macRemarks = ''
       this.macConfig.macTowIp = ''
+      this.macConfig.idcTowShow = ''
       this.whilteListIp = []
     },
     cancelAddRoomModifier () { // 关闭新增机房
       this.cancelAddRoom()
       this.distinction = ''
+      this.ipShow = false
+    },
+    showText () {
+      if (this.macConfig.idcTowShow !== '' && this.macConfig.idcTowShow !== undefined) {
+        return this.macConfig.idcTowShow
+      } else {
+        return this.modifierData.idc_tow_show === '0' ? '显示' : '不显示'
+      }
     },
     modifier (index) { // 修改机房信息的modal 弹出
+      this.modifierIdcInd = index
       this.macRoomModifier = true
       this.modifierData = this.adminData[index]
+      this.originTowIp = JSON.stringify(this.adminData[index].idc_towopenip)
       this.distinction = '修改'
+      this.ipShow = true
+      let arr = []
+      for (let i in this.modifierData.idc_towopenip) {
+        let obj = {}
+        obj.ipName = i
+        obj.ipRemarks = this.modifierData.idc_towopenip[i]
+        arr.push(obj)
+      }
+      this.modifierDataOriArr = arr
     },
     subMacModifier () { // 提交修改后的机房信息
       let changeDataChart = JSON.stringify(this.modifierData)
       let changeObj = this.change(JSON.parse(changeDataChart))
-      let flag = this.compareValChange(this.modifierData, changeObj)
+      let towipObj = JSON.parse(this.originTowIp)
+      let flag = this.compareValChange(this.modifierData, changeObj, towipObj)
       console.log(flag)
       let id = changeObj.id
+      changeObj.idc_tow_show = this.macConfig.idcTowShow === '显示' ? '0' : '1'
       let changeChart = JSON.stringify(changeObj)
       if (flag) {
         this.$post('/webapi/global', {key: 'update', content: changeChart, id: id})
@@ -504,6 +562,7 @@ export default {
             this.$Message.info('修改成功')
             this.macRoomModifier = false
             this.cancelAddRoom()
+            this.ipShow = false
             this.distinction = ''
             this.getData()
           })
@@ -514,9 +573,16 @@ export default {
         window.alert('数据请修改后在提交！！！')
       }
     },
-    compareValChange (unchange, change) { // 判断机房信息是否有修改。如果修改返回tru，否则返回false
+    compareValChange (unchange, change, towip) { // 判断机房信息是否有修改。如果修改返回tru，否则返回false
       let unchangeTowOpenIpArr = this.objTransformArr(unchange.idc_towopenip)
       let changeTowOpenIpArr = this.objTransformArr(change.idc_towopenip)
+      let towipArr = this.objTransformArr(towip)
+      if (towipArr.length !== changeTowOpenIpArr.length) {
+        return true
+      }
+      if (this.macConfig.idcTowShow !== unchange.idc_tow_show === '0' ? '显示' : '不显示' && this.macConfig.idcTowShow !== '' && this.macConfig.idcTowShow !== undefined) {
+        return true
+      }
       if (unchange.idc_name !== change.idc_name) {
         return true
       }
@@ -683,11 +749,11 @@ export default {
     color: #1c2438
   }
   .mac-config label, .mac-config span{
-    font-size: 14px;
+    font-size: 12px;
   }
   .mac-config input{
     margin-left: 10px;
-    font-size: 14px;
+    font-size: 12px;
     color: #657180;
     padding: 4px 8px 4px 8px;
     border: none;
@@ -704,17 +770,17 @@ export default {
   .mac-config .traction h1{
     margin-bottom: 15px;
     text-align: center;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
   }
   .mac-config .open-ip P{
-    font-size: 14px;
+    font-size: 12px;
   }
   .mac-config .whilte-list-ip{
-    margin-top: 15px;
+    margin-top: 10px;
   }
   .mac-config .whilte-list-ip li{
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     height: 32px;
     list-style: none;
     font-size: 16px;
@@ -735,5 +801,8 @@ export default {
   }
   .mac-config .whilte-list-ip li span:hover{
     color: #1e88e5;
+  }
+  .mac-config .idc-tow-show{
+    margin-bottom: 20px;
   }
 </style>

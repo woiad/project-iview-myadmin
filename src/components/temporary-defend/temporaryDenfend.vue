@@ -25,11 +25,6 @@
             <label>牵引时间&nbsp;&nbsp; (单位：分钟)</label>
             <i-input placeholder="请输入牵引时间" v-model="defData.idc_ip_tow_time"></i-input>
           </div>
-          <div class="item" style="margin-top: 20px">
-            <Select v-model="defData.idc_name"  placeholder="请选择机房">
-              <Option v-for="item in idcList" :value="item.idc_name" :key="item.idc_name">{{ item.idc_name }}</Option>
-            </Select>
-          </div>
         </div>
         <div slot="footer">
           <Button @click="temCancel">重置</Button>
@@ -109,7 +104,6 @@ export default {
       buildTemShow: false,
       defData: {
         ip: '',
-        idc_name: '',
         time: '',
         idc_ip_bps: '',
         idc_ip_tow_time: ''
@@ -145,13 +139,12 @@ export default {
     },
     temCancel () {
       this.defData.ip = ''
-      this.defData.idc_name = ''
       this.defData.idc_ip_bps = ''
       this.defData.time = ''
       this.defData.idc_ip_tow_time = ''
     },
     temSub () {
-      if (this.defData.ip === '' || this.defData.idc_name === '' || this.defData.idc_ip_bps === '' || this.defData.time === '' || this.defData.idc_ip_tow_time === '') {
+      if (this.defData.ip === '' || this.defData.idc_ip_bps === '' || this.defData.time === '' || this.defData.idc_ip_tow_time === '') {
         alert('请填写完整资料！')
         return true
       }
@@ -159,16 +152,8 @@ export default {
         alert('ip格式不正确！')
         return true
       }
-      let id = ''
-      for (let i = 0; i < this.idcList.length; i++) {
-        if (this.defData.idc_name === this.idcList[i].idc_name) {
-          id = this.idcList[i].id
-        }
-      }
       let obj = {}
       obj.ip = this.defData.ip
-      obj.idc_root_id = id
-      obj.idc_root_name = this.defData.idc_name
       obj.time = this.defData.time
       obj.idc_ip_bps = this.defData.idc_ip_bps
       obj.idc_ip_tow_time = this.defData.idc_ip_tow_time

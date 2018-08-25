@@ -3,7 +3,14 @@
     <div class="user-add">
       <Button type="primary" icon="ios-plus-empty" @click="addUser" :disabled="!levelMess['新建']">新增用户</Button>
     </div>
-    <div class="user-list">
+    <div class="search">
+      <Icon type="ios-search" class="search-icon"></Icon>
+      <Select filterable style="width: 300px" remote  :remote-method="remoteMethod" placeholder="请输入用户名搜素"
+              @on-change="choseUser">
+        <Option v-for="(item, index) in serachData" :key="index" :value="item.user_name">{{item.user_name}}</Option>
+      </Select>
+    </div>
+    <div class="user-list table">
       <i-table :columns="columnsData" :data="userData"></i-table>
     </div>
     <div class="modal">
@@ -124,6 +131,9 @@
           <Button type="error" size="large" long @click="confirmDel">删除</Button>
         </div>
       </Modal>
+      <div class="page">
+        <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
+      </div>
     </div>
   </div>
 </template>
@@ -146,6 +156,10 @@ export default {
         {
           title: '用户名称',
           key: 'user_name'
+        },
+        {
+          title: '用户账号',
+          key: 'user_accounts'
         },
         {
           title: '用户部门',
@@ -262,7 +276,11 @@ export default {
       }, // 设置表单校验
       userDelShow: false, // 删除用户的modal的隐藏与显示
       delId: '', // 删除的索引
-      levelMess: {}
+      levelMess: {},
+      pageShow: false,
+      pageNum: '',
+      allData: [],
+      serachData: []
     }
   },
   methods: {
@@ -478,14 +496,47 @@ export default {
       this.$post('/webapi/user', {key: 'show'})
         .then(res => {
           this.userData = []
+          this.allData = []
           for (let i = 0; i < res.length; i++) {
             this.userData.push(res[i])
+            this.allData.push(res[i])
           }
           this.userOriginData = res
+          if (res.length > 10) {
+            this.pageShow = true
+            this.pageNum = res.length
+            this.userData = this.allData.slice(0, 10)
+          } else if (res.length < 10) {
+            this.pageShow = false
+          }
         })
         .catch(err => {
           console.log(err)
         })
+    },
+    pageChange (num) {
+      this.userData = this.allData.slice((num - 1) * 10, num * 10)
+    },
+    remoteMethod (query) {
+      let regx = new RegExp(query + '+', 'g')
+      this.serachData = this.allData.filter((item, index, array) => {
+        if (regx.test(item.user_name)) {
+          return item
+        }
+      })
+    },
+    choseUser (val) {
+      let flag = true
+      for (let i = 0; i < this.allData.length; i++) {
+        if (val === this.allData[i].user_name) {
+          this.userData = []
+          this.userData.push(this.allData[i])
+          flag = false
+        }
+      }
+      if (flag) {
+        this.userData = []
+      }
     }
   },
   mounted () {
@@ -520,6 +571,22 @@ export default {
   }
   .user-container .user-add{
     margin-bottom: 10px;
+    display: inline-block;
+    vertical-align: top;
+  }
+  .search{
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    margin: 0px 0 0 50px;
+  }
+  .search-icon{
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    margin-top: -9px;
+    z-index: 10;
+    font-size: 18px;
   }
   .user-con .ivu-form-item{
     margin-bottom: 10px;
@@ -546,5 +613,12 @@ export default {
   }
   .btn{
     margin-top: 20px;
+  }
+  .table{
+    margin-bottom: 60px;
+  }
+  .page{
+    margin-top: 25px;
+    text-align: center;
   }
 </style>

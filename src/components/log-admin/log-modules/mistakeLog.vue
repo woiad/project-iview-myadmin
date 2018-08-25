@@ -112,6 +112,7 @@ export default {
           if (JSON.stringify(res) !== '{}') {
             res.forEach((item, index) => {
               this.mistakeData.push(item)
+              this.originData.push(item)
             })
           }
           if (res.length > 10) {

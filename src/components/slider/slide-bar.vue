@@ -113,7 +113,8 @@ export default {
     white-space: nowrap;
   }
   .ivu-menu-item.iconShow{
-    padding: 14px 10px;
+    display: flex;
+    justify-content: center;
   }
   .ivu-tooltip-popper{
     maargin-left: 10px;

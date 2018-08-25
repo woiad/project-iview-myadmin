@@ -76,14 +76,14 @@ export default {
         key: 'idcrootname',
         width: 120
       })
-      if (this.flowShow) {
+      if (this.levelMess['查看全部']) {
         data.push({
           title: '真实流量 (单位：mb/s)',
           key: 'flow',
           width: 180
         })
       }
-      if (this.setFlowShow) {
+      if (this.levelMess['查看全部']) {
         data.push({
           title: '设置防护值 (单位：mb/s)',
           key: 'set_flow',
@@ -115,43 +115,14 @@ export default {
         key: 'type',
         width: 120
       })
-      data.push({
-        title: '操作',
-        width: 80,
-        fixed: 'right',
-        align: 'center',
-        render: (h, params) => {
-          return h('Button', {
-            props: {
-              type: 'error',
-              size: 'small',
-              disabled: !this.levelMess['查看全部']
-            },
-            on: {
-              click: () => {
-                this.showALL()
-              }
-            }
-          }, '全部')
-        }
-      })
       return data
-    },
-    a () {
-      return this.$store.state.userLevel
-    }
-  },
-  watch: {
-    a: {
-      handler: function (val) {
-        this.levelMess = val['实时牵引管理']
-      }
     }
   },
   mounted () {
-    if (this.$store.state.userLevel !== undefined) {
-      this.levelMess = this.$store.state.userLevel['实时牵引管理']
-    }
+    this.$post('webapi/user', {key: 'level'})
+      .then(res => {
+        this.levelMess = res.user_level['实时牵引管理']
+      })
     this.getData()
   },
   methods: {
