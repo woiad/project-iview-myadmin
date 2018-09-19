@@ -188,22 +188,24 @@ export default {
   watch: {
     '$route' (to, from) {
       if (to.name === '实时牵引管理') {
-        this.inter = setInterval(() => {
+        this.realInter = setInterval(() => {
           this.getData()
         }, 6000)
       } else {
-        clearInterval(this.inter)
+        clearInterval(this.realInter)
       }
     }
   },
   created () {
     this.getData()
-    this.inter = setInterval(() => {
-      this.getData()
-    }, 6000)
+    if (this.$store.state.active === '实时牵引管理') {
+      this.realInter = setInterval(() => {
+        this.getData()
+      }, 6000)
+    }
   },
   beforeDestroy () {
-    clearInterval(this.inter)
+    clearInterval(this.realInter)
   },
   mounted () {
     if (this.row.status === 'true' && this.row.data instanceof Array !== true) {

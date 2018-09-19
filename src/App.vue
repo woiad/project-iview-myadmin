@@ -1,12 +1,48 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view v-if="isRouterAlive"/>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 export default {
-  name: 'App'
+  name: 'App',
+  provide () {
+    return {
+      reload: this.reload
+    }
+  },
+  data () {
+    return {
+      isRouterAlive: true
+    }
+  },
+  mounted () {
+    setInterval(() => {
+      this.$post('/webapi/user', {key: 'level'})
+        .then(res => {
+          if (typeof res !== 'object') {
+            alert('登陆超时，请重新登陆')
+            axios.get('/login_out')
+              .then(res => {
+                window.location.href = '/'
+              })
+              .catch(err => {
+                this.$Message.info('退出失败' + err)
+              })
+          }
+        })
+    }, 10000)
+  },
+  methods: {
+    reload () {
+      this.isRouterAlive = false
+      this.$nextTick(() => {
+        this.isRouterAlive = true
+      })
+    }
+  }
 }
 </script>
 

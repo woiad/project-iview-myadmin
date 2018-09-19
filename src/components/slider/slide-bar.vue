@@ -12,6 +12,7 @@
 <script>
 export default {
   name: 'slide-bar',
+  inject: ['reload'],
   props: {
     isCollapsed: {
       type: Boolean
@@ -24,6 +25,11 @@ export default {
     },
     textShow: {
       type: Boolean
+    }
+  },
+  data () {
+    return {
+      refresh: false
     }
   },
   watch: {
@@ -69,6 +75,9 @@ export default {
     handelChange (name) {
       let width = window.screen.width
       this.$router.push({name: name})
+      if (name === '手动封停管理') {
+        this.reload()
+      }
     },
     init () {
       if (JSON.stringify(this.$store.state.userLevel) === '{}') {

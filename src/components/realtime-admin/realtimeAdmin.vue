@@ -41,7 +41,8 @@ export default {
       ],
       levelMess: {},
       originData: [],
-      rowIndex: ''
+      rowIndex: '',
+      routerLeave: false
     }
   },
   methods: {

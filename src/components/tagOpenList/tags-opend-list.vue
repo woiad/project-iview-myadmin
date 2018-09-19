@@ -37,6 +37,7 @@
 <script>
 export default {
   name: 'tags-opend-list',
+  inject: ['reload'],
   data () {
     return {
       tagBodyLeft: 0,
@@ -105,6 +106,9 @@ export default {
       }
     },
     linKTo (item) {
+      if (item.name === '手动封停管理') {
+        this.reload()
+      }
       let routerObj = {}
       routerObj.name = item.name
       if (item.argu) {

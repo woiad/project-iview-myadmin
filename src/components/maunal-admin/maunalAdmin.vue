@@ -5,7 +5,7 @@
     </div>
     <div class="query">
       <div class="query-idc">
-        <Select v-model="idcName" style="width:200px" placeholder="请选择机房名称">
+        <Select v-model="idcName" style="width:200px" placeholder="请选择机房名称" @on-change="choseIdcName">
           <Option v-for="(item,index) in idcData" :value="item.idc_name" :key="index">{{ item.idc_name }}</Option>
         </Select>
       </div>
@@ -21,6 +21,9 @@
     </div>
     <div class="table">
       <i-table :columns="columnsData" :data="addData"></i-table>
+    </div>
+    <div class="page" style="text-align: center; margin-bottom: 150px">
+      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
     </div>
     <div class="modal">
       <div class="modal">
@@ -53,9 +56,6 @@
           </div>
         </Modal>
       </div>
-    </div>
-    <div class="page">
-      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
     </div>
   </div>
 </template>
@@ -180,6 +180,7 @@ export default {
             })
             if (res.length > 10) {
               this.pageNum = res.length
+              console.log(typeof this.pageNum)
               this.pageShow = true
               this.addData = this.originData.slice(0, 10)
             } else if (res.length <= 10) {
@@ -270,6 +271,11 @@ export default {
         this.getIpData()
       }, 3000)
     },
+    choseIdcName (val) {
+      if (val !== '全部') {
+        this.getIpData()
+      }
+    },
     hisQuery () {
       let obj = {
         ip: '',
@@ -359,6 +365,6 @@ export default {
     font-weight: normal;
   }
   .table{
-    margin-bottom: 150px;
+    margin-bottom: 20px;
   }
 </style>
