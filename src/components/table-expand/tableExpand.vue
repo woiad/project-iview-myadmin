@@ -80,6 +80,21 @@ export default {
   computed: {
     tracIpColumns () {
       let columns = []
+      columns.push({
+        title: 'ip地址',
+        key: 'ip',
+        fixed: 'left',
+        width: 200
+      })
+      columns.push({title: '攻击流量 (单位: mb/s)',
+        key: 'ran_flow',
+        width: 180
+      })
+      columns.push({
+        title: '牵引时间',
+        key: 'tow_time_start',
+        width: 180
+      })
       if (this.level['查看全部']) {
         columns.push({
           title: '设置防护值 (单位: mb/s)',
@@ -92,13 +107,6 @@ export default {
         columns.push({
           title: '真实流量 (单位：mb/s)',
           key: 'flow',
-          width: 180
-        })
-      }
-      if (this.level['查看全部']) {
-        columns.push({
-          title: '牵引时间',
-          key: 'tow_time_start',
           width: 180
         })
       }
@@ -143,15 +151,6 @@ export default {
           ])
         }
       })
-      columns.push({
-        title: 'ip地址',
-        key: 'ip',
-        fixed: 'left',
-        width: 200
-      })
-      columns.push({title: '攻击流量 (单位: mb/s)',
-        key: 'ran_flow',
-        width: 180})
       columns.push({title: '解封时间',
         key: 'tow_time_r',
         width: 220})

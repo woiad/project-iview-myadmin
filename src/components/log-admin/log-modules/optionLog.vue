@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="table">
-      <i-table :columns="columnsData" :data="optionData"></i-table>
+      <i-table :columns="columnsData" :data="optionData" :loading="loading"></i-table>
     </div>
     <div class="page">
       <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
@@ -44,6 +44,7 @@ export default {
           }
         }
       },
+      loading: true,
       columnsData: [
         {
           title: '用户名',
@@ -103,6 +104,7 @@ export default {
           } else if (res.length <= 10) {
             this.pageShow = false
           }
+          this.loading = false
         })
         .catch(err => {
           console.log(err)

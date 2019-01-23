@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="table">
-      <i-table :columns="columnsData" :data="ipsData"></i-table>
+      <i-table :columns="columnsData" :data="ipsData" :loading="loading"></i-table>
     </div>
     <div class="modal">
       <Modal v-model="buildShow" title="新建IP段" @on-cancel="buildCancel">
@@ -84,7 +84,7 @@
       </Modal>
     </div>
     <div class="page">
-      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
+      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow" :currentPage="currentPage"></Page>
     </div>
   </div>
 </template>
@@ -156,6 +156,7 @@ export default {
           }
         }
       ],
+      loading: true,
       ipsData: [],
       idcName: '',
       ip: '',
@@ -179,7 +180,9 @@ export default {
       delData: {},
       allData: [],
       pageNum: '',
-      pageShow: false
+      pageShow: false,
+      currentPage: 1,
+      page: 0
     }
   },
   mounted () {
@@ -192,12 +195,14 @@ export default {
           res.forEach((item, index) => {
             this.idcList.push(item)
           })
+          this.loading = false
         })
         .catch(err => {
           console.log(err)
         })
     },
-    getShowData (chart) {
+    getShowData (chart, type) {
+      this.loading = true
       this.$post('/webapi/ipfwset', {key: 'ipsshow', content: chart})
         .then(res => {
           this.ipsData = []
@@ -207,20 +212,33 @@ export default {
               this.ipsData.push(item)
               this.allData.push(item)
             })
+          } else {
+            this.pageShow = false
           }
           if (res.length > 10) {
             this.pageNum = res.length
             this.pageShow = true
-            this.ipsData = this.allData.slice(0, 10)
+            if (this.currentPage === this.page) { // 当删除数据时，页面停留在当前页，且删除当前页数据
+              if (res.length % 10 === 0 && !type) { // 判断当前页面数据清空时，直接显示前一页数据
+                this.page -= 1
+                this.currentPage -= 1
+                this.ipsData = this.allData.slice((this.page - 1) * 10, this.page * 10)
+              } else {
+                this.ipsData = this.allData.slice((this.page - 1) * 10, this.page * 10)
+              }
+            } else {
+              this.ipsData = this.allData.slice(0, 10)
+            }
           } else if (res.length <= 10) {
             this.pageShow = false
           }
+          this.loading = false
         })
         .catch(err => {
           console.log(err)
         })
     },
-    ipQuery () {
+    ipQuery (type) {
       let obj = {}
       if (this.idcName === '' && this.ip === '') {
         alert('请输入机房名称或IP地址')
@@ -325,7 +343,8 @@ export default {
             this.$Message.info('修改成功')
             this.modifierCancel()
             this.midifiShow = false
-            this.ipQuery()
+            this.currentPage = this.page
+            this.ipQuery('modify')
           }
         })
         .catch(err => {
@@ -342,6 +361,7 @@ export default {
         .then(res => {
           this.$Message.info('删除成功！')
           this.delConfirm = false
+          this.currentPage = this.page
           this.ipQuery()
         })
         .catch(err => {
@@ -349,6 +369,7 @@ export default {
         })
     },
     pageChange (num) {
+      this.page = num
       this.ipsData = this.allData.slice((num - 1) * 10, num * 10)
     }
   }

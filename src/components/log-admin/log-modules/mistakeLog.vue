@@ -26,7 +26,7 @@
       </div>
     </div>
     <div class="table">
-      <i-table :columns="columnsData" :data="mistakeData"></i-table>
+      <i-table :columns="columnsData" :data="mistakeData" :loading="loading"></i-table>
     </div>
     <div class="page">
       <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
@@ -47,6 +47,7 @@ export default {
           }
         }
       },
+      loading: true,
       columnsData: [
         {
           title: '机房名称',
@@ -97,6 +98,7 @@ export default {
       .catch(err => {
         console.log(err)
       })
+    this.getData()
   },
   methods: {
     getData () {
@@ -122,6 +124,7 @@ export default {
           } else if (res.length <= 10) {
             this.pageShow = false
           }
+          this.loading = false
         })
         .catch(err => {
           console.log(err)

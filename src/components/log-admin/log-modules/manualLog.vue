@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="table">
-      <i-table :columns="columnsData" :data="manualData"></i-table>
+      <i-table :columns="columnsData" :data="manualData" :loading="loading"></i-table>
     </div>
     <div class="page">
       <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
@@ -44,6 +44,7 @@ export default {
           }
         }
       },
+      loading: true,
       columnsData: [
         {
           title: '机房名称',
@@ -64,6 +65,10 @@ export default {
         {
           title: '操作类型',
           key: 'type'
+        },
+        {
+          title: '备注',
+          key: 'remarks'
         }
       ],
       manualData: [],
@@ -105,6 +110,7 @@ export default {
           } else if (res.length <= 10) {
             this.pageShow = false
           }
+          this.loading = false
         })
         .catch(err => {
           console.log(err)

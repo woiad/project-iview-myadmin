@@ -102,8 +102,8 @@ util.dateProces = function (dateStart, dateEnd, timeStart, timeEnd, ip) {
   let obj = {}
   let allDate = {}
   if (dateStart === '' && timeEnd === '' && ip !== '') {
-    allDate.time_start = util.time(new Date())
-    allDate.time_end = util.addDat(allDate.time_start, 1)
+    allDate.time_start = '' // util.time(new Date())
+    allDate.time_end = '' // util.addDat(allDate.time_start, 1)
     allDate.ip = ip
     return allDate
   }

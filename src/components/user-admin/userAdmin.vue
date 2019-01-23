@@ -131,9 +131,9 @@
           <Button type="error" size="large" long @click="confirmDel">删除</Button>
         </div>
       </Modal>
-      <div class="page">
-        <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
-      </div>
+    </div>
+    <div class="page" style="margin-bottom: 150px">
+      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
     </div>
   </div>
 </template>

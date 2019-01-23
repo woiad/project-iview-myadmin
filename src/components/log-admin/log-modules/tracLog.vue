@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="table">
-      <i-table :columns="columnsData" :data="tracData"></i-table>
+      <i-table :columns="columnsData" :data="tracData" :loading="loading"></i-table>
     </div>
     <div class="page">
       <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
@@ -44,6 +44,7 @@ export default {
           }
         }
       },
+      loading: true,
       levelMess: {},
       time: {
         start: '',
@@ -76,6 +77,21 @@ export default {
         key: 'idcrootname',
         width: 120
       })
+      data.push({
+        title: '牵引开始时间',
+        key: 'tow_time_start',
+        width: 180
+      })
+      data.push({
+        title: '攻击值',
+        key: 'ran_flow',
+        width: 120
+      })
+      data.push({
+        title: '牵引结束时间',
+        key: 'tow_time_end',
+        width: 180
+      })
       if (this.levelMess['查看全部']) {
         data.push({
           title: '真实流量 (单位：mb/s)',
@@ -90,21 +106,6 @@ export default {
           width: 180
         })
       }
-      data.push({
-        title: '牵引开始时间',
-        key: 'tow_time_start',
-        width: 180
-      })
-      data.push({
-        title: '牵引结束时间',
-        key: 'tow_time_end',
-        width: 180
-      })
-      data.push({
-        title: '攻击值',
-        key: 'ran_flow',
-        width: 120
-      })
       data.push({
         title: '操作人员',
         key: 'opername',
@@ -158,6 +159,7 @@ export default {
           } else if (res.length <= 10) {
             this.pageShow = false
           }
+          this.loading = false
         })
         .catch(err => {
           console.log(err)

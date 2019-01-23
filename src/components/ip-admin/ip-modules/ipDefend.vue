@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="table">
-      <i-table :columns="columnsData" :data="ipDefendData"></i-table>
+      <i-table :columns="columnsData" :data="ipDefendData" :loading="loading"></i-table>
     </div>
     <div class="modal">
       <Modal v-model="buildShow" title="新建IP" @on-cancel="buildCancel">
@@ -70,7 +70,7 @@
       </Modal>
     </div>
     <div class="page">
-      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
+      <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow" :current="currentPage"></Page>
     </div>
   </div>
 </template>
@@ -139,6 +139,7 @@ export default {
           }
         }
       ],
+      loading: true,
       ipDefendData: [],
       idcName: '',
       ip: '',
@@ -159,7 +160,9 @@ export default {
       delData: {},
       pageNum: '',
       pageShow: false,
-      allData: []
+      allData: [],
+      currentPage: 1,
+      page: 0
     }
   },
   methods: {
@@ -171,17 +174,20 @@ export default {
               this.idcList.push(item)
             })
           }
+          this.loading = false
         })
         .catch(err => {
           console.log(err)
         })
     },
-    getShowData (chart) {
+    getShowData (chart, type) { // type 用来判断操作时删除还是修改
+      this.loading = true
       this.$post('/webapi/ipfwset', {key: 'ipshow', content: chart})
         .then(res => {
           this.ipDefendData = []
           this.allData = []
           if (JSON.stringify(res) !== '{}') {
+            console.log(res.length)
             res.forEach((item, index) => {
               this.ipDefendData.push(item)
               this.allData.push(item)
@@ -190,16 +196,27 @@ export default {
           if (res.length > 10) {
             this.pageNum = res.length
             this.pageShow = true
-            this.ipDefendData = this.originData.slice(0, 10)
+            if (this.currentPage === this.page) { // 当删除数据时，页面停留在当前页，且删除当前页数据
+              if (res.length % 10 === 0 && !type) { // 判断当前页面数据清空时，直接显示前一页数据
+                this.page -= 1
+                this.currentPage -= 1
+                this.ipDefendData = this.allData.slice((this.page - 1) * 10, this.page * 10)
+              } else {
+                this.ipDefendData = this.allData.slice((this.page - 1) * 10, this.page * 10)
+              }
+            } else {
+              this.ipDefendData = this.allData.slice(0, 10)
+            }
           } else if (res.length <= 10) {
             this.pageShow = false
           }
+          this.loading = false
         })
         .catch(err => {
           console.log(err)
         })
     },
-    ipQuery () {
+    ipQuery (type) {
       let obj = {}
       if (this.idcName === '' && this.ip === '') {
         alert('请输入机房名称或IP地址')
@@ -224,7 +241,7 @@ export default {
         obj.ip = ''
       }
       let chart = JSON.stringify(obj)
-      this.getShowData(chart)
+      this.getShowData(chart, type)
     },
     bulidIp () {
       this.buildShow = true
@@ -257,6 +274,7 @@ export default {
             this.$Message.info('提交成功！')
             this.buildCancel()
             this.buildShow = false
+            this.showAddIp(obj.ip)
             if (this.idcName !== '') {
               this.ipQuery()
             }
@@ -266,8 +284,22 @@ export default {
           this.$Message.info('提交失败' + err)
         })
     },
+    showAddIp (ip) { // 无数据时，添加ip，ip显示在table里
+      let obj = {}
+      obj.ip = ip
+      obj.idc_id_root = ''
+      this.$post('/webapi/ipfwset', {key: 'ipshow', content: JSON.stringify(obj)})
+        .then(res => {
+          if (JSON.stringify(res) !== {}) {
+            this.ipDefendData.unshift(res[0])
+          }
+        })
+        .catch(err => {
+          this.$Message.error(err)
+          console.log(err)
+        })
+    },
     modifierShow (params) {
-      console.log(params)
       this.originData = {}
       this.ipDefendData.forEach((item, index) => {
         if (index === params.index) {
@@ -303,8 +335,9 @@ export default {
         .then(res => {
           this.$Message.info('修改成功')
           this.modifierCancel()
+          this.currentPage = this.page
           this.midifiShow = false
-          this.ipQuery()
+          this.ipQuery('modify')
         })
         .catch(err => {
           this.$Message.info('修改失败' + err)
@@ -320,6 +353,7 @@ export default {
         .then(res => {
           this.$Message.info('删除成功！')
           this.delConfirm = false
+          this.currentPage = this.page
           this.ipQuery()
         })
         .catch(err => {
@@ -327,6 +361,7 @@ export default {
         })
     },
     pageChange (num) {
+      this.page = num
       this.ipDefendData = this.allData.slice((num - 1) * 10, num * 10)
     }
   },

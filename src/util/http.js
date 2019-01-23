@@ -1,8 +1,8 @@
 import axios from 'axios'
 import qs from 'qs'
 
-axios.defaults.timeout = 6000 // 设置超时时间
-// axios.defaults.baseURL = 'http://113.105.246.233:9100'
+axios.defaults.timeout = 10000 // 设置超时时间
+axios.defaults.baseURL = 'http://113.105.246.233:9100'
 
 // http request 拦截器
 axios.interceptors.request.use(

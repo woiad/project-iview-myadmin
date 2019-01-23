@@ -23,7 +23,7 @@
       </div>
    </div>
     <div class="table">
-      <i-table :columns="columnsData" :data="temData"></i-table>
+      <i-table :columns="columnsData" :data="temData" :loading='loading'></i-table>
     </div>
     <div class="page">
       <Page :total="pageNum" show-elevator @on-change="pageChange" v-if="pageShow"></Page>
@@ -37,6 +37,7 @@ export default {
   name: 'temporaryLog',
   data () {
     return {
+      loading: true,
       columnsData: [
         {
           title: '机房名称',
@@ -113,6 +114,7 @@ export default {
           } else if (res.length <= 10) {
             this.pageShow = false
           }
+          this.loading = false
         })
         .catch(err => {
           console.log(err)
